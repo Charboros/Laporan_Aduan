@@ -11,6 +11,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AduanController extends Controller
 {
+    // =========================================================
+    // Daftar referensi (kanal & klasifikasi)
+    // =========================================================
+
     public static function listKanal(): array
     {
         return ['Instagram', 'Facebook', 'Google Review', 'WhatsApp', 'Langsung', 'Lainnya'];
@@ -21,15 +25,15 @@ class AduanController extends Controller
         return ['Akta', 'KK', 'KTP', 'Infrastruktur', 'SDM', 'Pelayanan', 'Lainnya'];
     }
 
+    // =========================================================
+    // CRUD
+    // =========================================================
+
     public function index()
     {
-        $user = Auth::user();
-
-        if ($user->role === 'petugas') {
-            $aduans = Aduan::where('created_by', $user->id)->orderBy('created_at', 'desc')->get();
-        } else {
-            $aduans = Aduan::orderBy('created_at', 'desc')->get();
-        }
+        $aduans = Aduan::forUser(Auth::user())
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('aduan.index', compact('aduans'));
     }
@@ -38,6 +42,7 @@ class AduanController extends Controller
     {
         $listKanal       = self::listKanal();
         $listKlasifikasi = self::listKlasifikasi();
+
         return view('aduan.create', compact('listKanal', 'listKlasifikasi'));
     }
 
@@ -56,8 +61,8 @@ class AduanController extends Controller
             'isi_respon_awal' => 'nullable|string',
         ]);
 
-        $lastAduan  = Aduan::latest()->first();
-        $nextId     = $lastAduan ? $lastAduan->id + 1 : 1;
+        // Generate nomor aduan menggunakan max(id) agar aman dari race condition
+        $nextId     = (Aduan::max('id') ?? 0) + 1;
         $nomorAduan = 'ADU-' . date('Y') . '-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
 
         $screenshotPath = null;
@@ -80,7 +85,7 @@ class AduanController extends Controller
             'created_by'      => Auth::id(),
         ]);
 
-        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil ditambahkan');
+        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil ditambahkan.');
     }
 
     public function show(Aduan $aduan)
@@ -92,6 +97,7 @@ class AduanController extends Controller
     {
         $listKanal       = self::listKanal();
         $listKlasifikasi = self::listKlasifikasi();
+
         return view('aduan.edit', compact('aduan', 'listKanal', 'listKlasifikasi'));
     }
 
@@ -131,7 +137,7 @@ class AduanController extends Controller
             'isi_respon_awal' => $request->isi_respon_awal,
         ]);
 
-        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil diupdate');
+        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil diperbarui.');
     }
 
     public function destroy(Aduan $aduan)
@@ -139,13 +145,20 @@ class AduanController extends Controller
         if ($aduan->screenshot_path) {
             Storage::disk('public')->delete($aduan->screenshot_path);
         }
+
         $aduan->delete();
-        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil dihapus');
+
+        return redirect()->route('aduan.index')->with('success', 'Aduan berhasil dihapus.');
     }
+
+    // =========================================================
+    // Export
+    // =========================================================
 
     public function export()
     {
         $filename = 'Laporan_Aduan_' . date('Ymd_His') . '.xlsx';
+
         return Excel::download(new AduanExport(), $filename);
     }
 }

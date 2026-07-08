@@ -12,83 +12,37 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // === STATISTIK KESELURUHAN ===
-        if ($user->role === 'petugas') {
-            $query = Aduan::where('created_by', $user->id);
-        } else {
-            $query = Aduan::query();
-        }
+        // Base query sesuai role (petugas hanya data miliknya sendiri)
+        $base = Aduan::forUser($user);
 
-        $totalAduan         = (clone $query)->count();
-        $aduanSudahDirespon = (clone $query)->where('sudah_direspon', true)->count();
-        $aduanBelumDirespon = (clone $query)->where('sudah_direspon', false)->count();
+        // ── Statistik keseluruhan ─────────────────────────────────
+        $totalAduan         = (clone $base)->count();
+        $aduanSudahDirespon = (clone $base)->where('sudah_direspon', true)->count();
+        $aduanBelumDirespon = (clone $base)->where('sudah_direspon', false)->count();
 
-        // === FILTER TAHUN ===
-        $tahunDipilih = $request->get('tahun', date('Y'));
+        // ── Filter tahun ──────────────────────────────────────────
+        $tahunDipilih = (int) $request->get('tahun', date('Y'));
 
-        $daftarTahun = (clone $query)
-            ->selectRaw('YEAR(tanggal_aduan) as tahun')
-            ->distinct()
-            ->whereNotNull('tanggal_aduan')
-            ->orderBy('tahun', 'desc')
-            ->pluck('tahun')
-            ->toArray();
+        $daftarTahun = (clone $base)->daftarTahun()->pluck('tahun')->toArray();
 
         if (empty($daftarTahun)) {
             $daftarTahun = [(int) date('Y')];
         }
 
-        // === TOTAL TAHUN INI ===
-        $totalTahunIni         = (clone $query)->whereYear('tanggal_aduan', $tahunDipilih)->count();
-        $sudahDiresponTahunIni = (clone $query)->whereYear('tanggal_aduan', $tahunDipilih)->where('sudah_direspon', true)->count();
-        $belumDiresponTahunIni = (clone $query)->whereYear('tanggal_aduan', $tahunDipilih)->where('sudah_direspon', false)->count();
+        // ── Statistik tahun yang dipilih ──────────────────────────
+        $totalTahunIni         = (clone $base)->whereYear('tanggal_aduan', $tahunDipilih)->count();
+        $sudahDiresponTahunIni = (clone $base)->whereYear('tanggal_aduan', $tahunDipilih)->where('sudah_direspon', true)->count();
+        $belumDiresponTahunIni = (clone $base)->whereYear('tanggal_aduan', $tahunDipilih)->where('sudah_direspon', false)->count();
 
-        // === PER KANAL ===
-        $perKanal = (clone $query)
-            ->selectRaw('COALESCE(kanal, "Tidak Diketahui") as kanal, COUNT(*) as jumlah')
-            ->whereYear('tanggal_aduan', $tahunDipilih)
-            ->groupBy('kanal')
-            ->orderBy('jumlah', 'desc')
-            ->get();
+        // ── Per kanal & klasifikasi ───────────────────────────────
+        $perKanal      = (clone $base)->perKanal($tahunDipilih)->get();
+        $perKlasifikasi = (clone $base)->perKlasifikasi($tahunDipilih)->get();
 
-        // === PER KLASIFIKASI ===
-        $perKlasifikasi = (clone $query)
-            ->selectRaw('COALESCE(klasifikasi, "Tidak Diketahui") as klasifikasi, COUNT(*) as jumlah')
-            ->whereYear('tanggal_aduan', $tahunDipilih)
-            ->groupBy('klasifikasi')
-            ->orderBy('jumlah', 'desc')
-            ->get();
+        // ── Per bulan (12 bulan penuh) ────────────────────────────
+        $dataBulan = Aduan::dataBulanFormatted(clone $base, $tahunDipilih);
 
-        // === PER BULAN ===
-        $perBulanRaw = (clone $query)
-            ->selectRaw('MONTH(tanggal_aduan) as bulan, COUNT(*) as jumlah')
-            ->whereYear('tanggal_aduan', $tahunDipilih)
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->get()
-            ->keyBy('bulan');
-
-        $namaBulan = [
-            1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr',
-            5 => 'Mei', 6 => 'Jun', 7 => 'Jul', 8 => 'Agt',
-            9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des',
-        ];
-
-        $dataBulan = [];
-        for ($b = 1; $b <= 12; $b++) {
-            $dataBulan[] = [
-                'bulan'  => $namaBulan[$b],
-                'jumlah' => isset($perBulanRaw[$b]) ? (int) $perBulanRaw[$b]->jumlah : 0,
-            ];
-        }
-
-        // === TREN TAHUNAN ===
-        $trenTahunan = (clone $query)
-            ->selectRaw('YEAR(tanggal_aduan) as tahun, COUNT(*) as jumlah')
-            ->whereNotNull('tanggal_aduan')
-            ->groupBy('tahun')
-            ->orderBy('tahun')
-            ->get();
+        // ── Tren tahunan ──────────────────────────────────────────
+        $trenTahunan = (clone $base)->trenTahunan()->get();
 
         return view('dashboard', compact(
             'totalAduan',
@@ -102,7 +56,7 @@ class DashboardController extends Controller
             'perKanal',
             'perKlasifikasi',
             'dataBulan',
-            'trenTahunan'
+            'trenTahunan',
         ));
     }
 }

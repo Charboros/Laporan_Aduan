@@ -1,94 +1,152 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center flex-wrap gap-3">
-            <h2 class="font-semibold text-xl leading-tight">Laporan & Rekapitulasi Aduan</h2>
+        <div class="flex flex-wrap justify-between items-center gap-3">
+            <div>
+                <h1 class="font-bold text-xl text-slate-800">Laporan &amp; Rekapitulasi</h1>
+                <p class="text-sm text-slate-500 mt-0.5">Rekap data aduan berdasarkan tahun</p>
+            </div>
             {{-- Filter Tahun --}}
             <form method="GET" action="{{ route('laporan.index') }}" class="flex items-center gap-2">
-                <label class="text-sm font-medium text-gray-600">Tampilkan tahun:</label>
+                <label class="text-sm font-medium text-slate-500">Tahun:</label>
                 <select name="tahun" onchange="this.form.submit()"
-                    class="border-gray-300 rounded-md text-sm shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 py-1.5">
+                        class="border-slate-200 rounded-lg text-sm shadow-sm bg-white
+                               focus:border-blue-400 focus:ring-2 focus:ring-blue-100 py-1.5 pr-8">
                     @foreach($daftarTahun as $t)
-                        <option value="{{ $t }}" {{ (string)$t == (string)$tahunDipilih ? 'selected' : '' }}>{{ $t }}</option>
+                        <option value="{{ $t }}" {{ (string)$t == (string)$tahunDipilih ? 'selected' : '' }}>
+                            {{ $t }}
+                        </option>
                     @endforeach
                 </select>
             </form>
         </div>
     </x-slot>
 
-    {{-- ===== KARTU STATISTIK TOTAL (SEMUA WAKTU) ===== --}}
+    {{-- ======================================================= --}}
+    {{-- STATISTIK KESELURUHAN --}}
+    {{-- ======================================================= --}}
     <div class="mb-2">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Statistik Keseluruhan (Semua Waktu)</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-lg shadow p-5 border-l-4 border-blue-500">
-                <p class="text-xs text-gray-500 uppercase font-semibold">Total Aduan</p>
-                <p class="text-4xl font-bold text-blue-600 mt-1">{{ $totalAduan }}</p>
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+            Statistik Keseluruhan (Semua Waktu)
+        </p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                 style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
             </div>
-            <div class="bg-white rounded-lg shadow p-5 border-l-4 border-green-500">
-                <p class="text-xs text-gray-500 uppercase font-semibold">Sudah Direspon</p>
-                <p class="text-4xl font-bold text-green-600 mt-1">{{ $totalSudahDirespon }}</p>
+            <div>
+                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wide">Total Aduan</p>
+                <p class="text-3xl font-bold text-slate-800">{{ $totalAduan }}</p>
+                <p class="text-xs text-slate-400 mt-0.5">Semua waktu</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                 style="background: linear-gradient(135deg, #34d399 0%, #059669 100%);">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wide">Sudah Direspon</p>
+                <p class="text-3xl font-bold text-emerald-600">{{ $totalSudahDirespon }}</p>
                 @if($totalAduan > 0)
-                    <p class="text-xs text-gray-400 mt-1">{{ number_format(($totalSudahDirespon / $totalAduan) * 100, 1) }}% dari total</p>
+                    <p class="text-xs text-emerald-500 mt-0.5">
+                        {{ number_format(($totalSudahDirespon / $totalAduan) * 100, 1) }}% dari total
+                    </p>
                 @endif
             </div>
-            <div class="bg-white rounded-lg shadow p-5 border-l-4 border-red-500">
-                <p class="text-xs text-gray-500 uppercase font-semibold">Belum Direspon</p>
-                <p class="text-4xl font-bold text-red-600 mt-1">{{ $totalBelumDirespon }}</p>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-red-100 p-5 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                 style="background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 font-semibold uppercase tracking-wide">Belum Direspon</p>
+                <p class="text-3xl font-bold text-red-600">{{ $totalBelumDirespon }}</p>
                 @if($totalAduan > 0)
-                    <p class="text-xs text-gray-400 mt-1">{{ number_format(($totalBelumDirespon / $totalAduan) * 100, 1) }}% dari total</p>
+                    <p class="text-xs text-red-400 mt-0.5">
+                        {{ number_format(($totalBelumDirespon / $totalAduan) * 100, 1) }}% dari total
+                    </p>
                 @endif
             </div>
         </div>
     </div>
 
-    {{-- ===== KARTU STATISTIK TAHUN INI ===== --}}
-    <div class="mb-6">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Statistik Tahun {{ $tahunDipilih }}</p>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-blue-50 border border-blue-200 rounded-lg p-5">
-                <p class="text-xs text-blue-600 uppercase font-semibold">Total Aduan {{ $tahunDipilih }}</p>
-                <p class="text-3xl font-bold text-blue-700 mt-1">{{ $totalTahunIni }}</p>
-            </div>
-            <div class="bg-green-50 border border-green-200 rounded-lg p-5">
-                <p class="text-xs text-green-600 uppercase font-semibold">Sudah Direspon</p>
-                <p class="text-3xl font-bold text-green-700 mt-1">{{ $sudahDiresponTahunIni }}</p>
-            </div>
-            <div class="bg-red-50 border border-red-200 rounded-lg p-5">
-                <p class="text-xs text-red-600 uppercase font-semibold">Belum Direspon</p>
-                <p class="text-3xl font-bold text-red-700 mt-1">{{ $belumDiresponTahunIni }}</p>
-            </div>
+    {{-- ======================================================= --}}
+    {{-- STATISTIK TAHUN DIPILIH --}}
+    {{-- ======================================================= --}}
+    <div class="mb-2">
+        <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">
+            Statistik Tahun {{ $tahunDipilih }}
+        </p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+        <div class="bg-blue-600 rounded-2xl p-4 text-center text-white shadow-sm">
+            <p class="text-xs uppercase font-semibold opacity-80">Total Aduan</p>
+            <p class="text-3xl font-bold mt-1">{{ $totalTahunIni }}</p>
+        </div>
+        <div class="bg-emerald-600 rounded-2xl p-4 text-center text-white shadow-sm">
+            <p class="text-xs uppercase font-semibold opacity-80">Sudah Direspon</p>
+            <p class="text-3xl font-bold mt-1">{{ $sudahDiresponTahunIni }}</p>
+        </div>
+        <div class="bg-red-500 rounded-2xl p-4 text-center text-white shadow-sm">
+            <p class="text-xs uppercase font-semibold opacity-80">Belum Direspon</p>
+            <p class="text-3xl font-bold mt-1">{{ $belumDiresponTahunIni }}</p>
         </div>
     </div>
 
-    {{-- ===== GRAFIK PER BULAN ===== --}}
-    <div class="bg-white rounded-lg shadow overflow-hidden mb-6">
-        <div class="px-6 py-4 border-b border-gray-100">
-            <h3 class="font-bold text-blue-800">Aduan per Bulan — Tahun {{ $tahunDipilih }}</h3>
+    {{-- ======================================================= --}}
+    {{-- GRAFIK PER BULAN --}}
+    {{-- ======================================================= --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-bold text-slate-800">Aduan per Bulan &mdash; {{ $tahunDipilih }}</h3>
+            @php $totalBulanIni = array_sum(array_column($dataBulan, 'jumlah')); @endphp
+            <span class="text-sm font-semibold text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
+                Total: {{ $totalBulanIni }}
+            </span>
         </div>
         <div class="p-6">
-            @php $totalBulanIni = array_sum(array_column($dataBulan, 'jumlah')); @endphp
             @if($totalBulanIni > 0)
-                <div style="height: 220px;">
+                <div style="height: 220px;" class="mb-5">
                     <canvas id="chartBulan"></canvas>
                 </div>
             @endif
-            <div class="overflow-x-auto mt-4">
+            <div class="overflow-x-auto">
                 <table class="w-full text-xs border-collapse">
                     <thead>
-                        <tr class="bg-gray-50">
+                        <tr class="bg-slate-50">
                             @foreach($dataBulan as $b)
-                                <th class="text-center p-2 border border-gray-200 font-semibold text-gray-600">{{ $b['bulan'] }}</th>
+                                <th class="text-center p-2 border border-slate-200 font-semibold text-slate-500 min-w-[40px]">
+                                    {{ $b['bulan'] }}
+                                </th>
                             @endforeach
-                            <th class="text-center p-2 border border-gray-200 font-bold text-blue-700 bg-blue-50">Total</th>
+                            <th class="text-center p-2 border border-slate-200 font-bold text-blue-700 bg-blue-50 min-w-[50px]">
+                                Total
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             @foreach($dataBulan as $b)
-                                <td class="text-center p-2 border border-gray-100 {{ $b['jumlah'] > 0 ? 'font-bold text-blue-700' : 'text-gray-300' }}">
+                                <td class="text-center p-2 border border-slate-100
+                                           {{ $b['jumlah'] > 0 ? 'font-bold text-blue-700' : 'text-slate-300' }}">
                                     {{ $b['jumlah'] }}
                                 </td>
                             @endforeach
-                            <td class="text-center p-2 border border-gray-200 font-bold text-blue-800 bg-blue-50">
+                            <td class="text-center p-2 border border-slate-200 font-bold text-blue-800 bg-blue-50">
                                 {{ $totalBulanIni }}
                             </td>
                         </tr>
@@ -98,13 +156,15 @@
         </div>
     </div>
 
-    {{-- ===== KANAL & KLASIFIKASI ===== --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    {{-- ======================================================= --}}
+    {{-- PER KANAL & PER KLASIFIKASI --}}
+    {{-- ======================================================= --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
 
         {{-- Per Kanal --}}
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h3 class="font-bold text-blue-800">Per Kanal — {{ $tahunDipilih }}</h3>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800">Per Kanal &mdash; {{ $tahunDipilih }}</h3>
             </div>
             <div class="p-6">
                 @php $totalKanalTahun = $perKanal->sum('jumlah'); @endphp
@@ -113,34 +173,36 @@
                         <canvas id="chartKanal"></canvas>
                     </div>
                 @endif
-                <table class="w-full text-sm border-collapse">
+                <table class="w-full text-sm">
                     <thead>
-                        <tr class="bg-gray-50 text-gray-500 text-xs">
-                            <th class="text-left p-2 border-b">Kanal</th>
-                            <th class="text-right p-2 border-b">Jumlah</th>
-                            <th class="text-right p-2 border-b">%</th>
+                        <tr class="bg-slate-50 text-xs text-slate-500">
+                            <th class="text-left p-2 border-b border-slate-200 font-semibold">Kanal</th>
+                            <th class="text-right p-2 border-b border-slate-200 font-semibold">Jumlah</th>
+                            <th class="text-right p-2 border-b border-slate-200 font-semibold">%</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-slate-50">
                         @forelse($perKanal as $row)
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="p-2 font-medium">{{ $row->kanal }}</td>
-                            <td class="p-2 text-right font-bold text-blue-700">{{ $row->jumlah }}</td>
-                            <td class="p-2 text-right text-gray-500 text-xs">
-                                {{ $totalKanalTahun > 0 ? number_format(($row->jumlah / $totalKanalTahun) * 100, 1) : 0 }}%
-                            </td>
-                        </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-2 font-medium text-slate-700">{{ $row->kanal }}</td>
+                                <td class="p-2 text-right font-bold text-blue-700">{{ $row->jumlah }}</td>
+                                <td class="p-2 text-right text-slate-400 text-xs">
+                                    {{ $totalKanalTahun > 0 ? number_format(($row->jumlah / $totalKanalTahun) * 100, 1) : 0 }}%
+                                </td>
+                            </tr>
                         @empty
-                        <tr>
-                            <td colspan="3" class="p-4 text-center text-gray-400 text-sm italic">Belum ada data untuk tahun {{ $tahunDipilih }}</td>
-                        </tr>
+                            <tr>
+                                <td colspan="3" class="p-4 text-center text-slate-400 text-sm italic">
+                                    Belum ada data tahun {{ $tahunDipilih }}
+                                </td>
+                            </tr>
                         @endforelse
                         @if($totalKanalTahun > 0)
-                        <tr class="bg-blue-50 font-bold text-sm">
-                            <td class="p-2 text-blue-800">Total</td>
-                            <td class="p-2 text-right text-blue-800">{{ $totalKanalTahun }}</td>
-                            <td class="p-2 text-right text-blue-800">100%</td>
-                        </tr>
+                            <tr class="bg-blue-50 font-bold text-sm">
+                                <td class="p-2 text-blue-800">Total</td>
+                                <td class="p-2 text-right text-blue-800">{{ $totalKanalTahun }}</td>
+                                <td class="p-2 text-right text-blue-600">100%</td>
+                            </tr>
                         @endif
                     </tbody>
                 </table>
@@ -148,9 +210,9 @@
         </div>
 
         {{-- Per Klasifikasi --}}
-        <div class="bg-white rounded-lg shadow overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100">
-                <h3 class="font-bold text-blue-800">Per Klasifikasi — {{ $tahunDipilih }}</h3>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800">Per Klasifikasi &mdash; {{ $tahunDipilih }}</h3>
             </div>
             <div class="p-6">
                 @php $totalKlasTahun = $perKlasifikasi->sum('jumlah'); @endphp
@@ -159,34 +221,36 @@
                         <canvas id="chartKlasifikasi"></canvas>
                     </div>
                 @endif
-                <table class="w-full text-sm border-collapse">
+                <table class="w-full text-sm">
                     <thead>
-                        <tr class="bg-gray-50 text-gray-500 text-xs">
-                            <th class="text-left p-2 border-b">Klasifikasi</th>
-                            <th class="text-right p-2 border-b">Jumlah</th>
-                            <th class="text-right p-2 border-b">%</th>
+                        <tr class="bg-slate-50 text-xs text-slate-500">
+                            <th class="text-left p-2 border-b border-slate-200 font-semibold">Klasifikasi</th>
+                            <th class="text-right p-2 border-b border-slate-200 font-semibold">Jumlah</th>
+                            <th class="text-right p-2 border-b border-slate-200 font-semibold">%</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-slate-50">
                         @forelse($perKlasifikasi as $row)
-                        <tr class="border-b border-gray-50 hover:bg-gray-50">
-                            <td class="p-2 font-medium">{{ $row->klasifikasi }}</td>
-                            <td class="p-2 text-right font-bold text-purple-700">{{ $row->jumlah }}</td>
-                            <td class="p-2 text-right text-gray-500 text-xs">
-                                {{ $totalKlasTahun > 0 ? number_format(($row->jumlah / $totalKlasTahun) * 100, 1) : 0 }}%
-                            </td>
-                        </tr>
+                            <tr class="hover:bg-slate-50 transition-colors">
+                                <td class="p-2 font-medium text-slate-700">{{ $row->klasifikasi }}</td>
+                                <td class="p-2 text-right font-bold text-violet-700">{{ $row->jumlah }}</td>
+                                <td class="p-2 text-right text-slate-400 text-xs">
+                                    {{ $totalKlasTahun > 0 ? number_format(($row->jumlah / $totalKlasTahun) * 100, 1) : 0 }}%
+                                </td>
+                            </tr>
                         @empty
-                        <tr>
-                            <td colspan="3" class="p-4 text-center text-gray-400 text-sm italic">Belum ada data untuk tahun {{ $tahunDipilih }}</td>
-                        </tr>
+                            <tr>
+                                <td colspan="3" class="p-4 text-center text-slate-400 text-sm italic">
+                                    Belum ada data tahun {{ $tahunDipilih }}
+                                </td>
+                            </tr>
                         @endforelse
                         @if($totalKlasTahun > 0)
-                        <tr class="bg-purple-50 font-bold text-sm">
-                            <td class="p-2 text-purple-800">Total</td>
-                            <td class="p-2 text-right text-purple-800">{{ $totalKlasTahun }}</td>
-                            <td class="p-2 text-right text-purple-800">100%</td>
-                        </tr>
+                            <tr class="bg-violet-50 font-bold text-sm">
+                                <td class="p-2 text-violet-800">Total</td>
+                                <td class="p-2 text-right text-violet-800">{{ $totalKlasTahun }}</td>
+                                <td class="p-2 text-right text-violet-600">100%</td>
+                            </tr>
                         @endif
                     </tbody>
                 </table>
@@ -194,24 +258,28 @@
         </div>
     </div>
 
-    {{-- ===== TREN TAHUNAN (jika lebih dari 1 tahun) ===== --}}
+    {{-- ======================================================= --}}
+    {{-- TREN TAHUNAN --}}
+    {{-- ======================================================= --}}
     @if($trenTahunan->count() > 1)
-    <div class="bg-white rounded-lg shadow overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100">
-            <h3 class="font-bold text-blue-800">Tren Aduan Tahunan</h3>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100">
+                <h3 class="font-bold text-slate-800">Tren Aduan Tahunan</h3>
+            </div>
+            <div class="p-6" style="height: 260px;">
+                <canvas id="chartTren"></canvas>
+            </div>
         </div>
-        <div class="p-6" style="height: 250px;">
-            <canvas id="chartTren"></canvas>
-        </div>
-    </div>
     @endif
 
     {{-- Chart.js --}}
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
-        const palette = ['#3B82F6','#8B5CF6','#10B981','#F59E0B','#EF4444','#06B6D4','#EC4899','#84CC16'];
+        const palette = [
+            '#3B82F6','#8B5CF6','#10B981','#F59E0B',
+            '#EF4444','#06B6D4','#EC4899','#84CC16'
+        ];
 
-        // ---- Chart Bulan (Bar) ----
         @if(array_sum(array_column($dataBulan, 'jumlah')) > 0)
         new Chart(document.getElementById('chartBulan'), {
             type: 'bar',
@@ -220,22 +288,21 @@
                 datasets: [{
                     label: 'Jumlah Aduan',
                     data: @json(array_column($dataBulan, 'jumlah')),
-                    backgroundColor: 'rgba(59,130,246,0.75)',
+                    backgroundColor: 'rgba(59,130,246,0.65)',
                     borderColor: '#3B82F6',
                     borderWidth: 1,
-                    borderRadius: 5,
+                    borderRadius: 6,
+                    borderSkipped: false,
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } } }
             }
         });
         @endif
 
-        // ---- Chart Kanal (Doughnut) ----
         @if($perKanal->count() > 0)
         new Chart(document.getElementById('chartKanal'), {
             type: 'doughnut',
@@ -249,15 +316,13 @@
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
-                cutout: '55%'
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 10 } } },
+                cutout: '60%'
             }
         });
         @endif
 
-        // ---- Chart Klasifikasi (Doughnut) ----
         @if($perKlasifikasi->count() > 0)
         new Chart(document.getElementById('chartKlasifikasi'), {
             type: 'doughnut',
@@ -271,36 +336,35 @@
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } },
-                cutout: '55%'
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 10 } } },
+                cutout: '60%'
             }
         });
         @endif
 
-        // ---- Chart Tren Tahunan (Line) ----
         @if($trenTahunan->count() > 1)
         new Chart(document.getElementById('chartTren'), {
             type: 'line',
             data: {
                 labels: @json($trenTahunan->pluck('tahun')),
                 datasets: [{
-                    label: 'Total Aduan per Tahun',
+                    label: 'Total Aduan',
                     data: @json($trenTahunan->pluck('jumlah')),
                     borderColor: '#3B82F6',
-                    backgroundColor: 'rgba(59,130,246,0.1)',
+                    backgroundColor: 'rgba(59,130,246,0.08)',
                     fill: true,
-                    tension: 0.3,
+                    tension: 0.35,
                     pointRadius: 6,
                     pointBackgroundColor: '#3B82F6',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false,
+                responsive: true, maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: '#f1f5f9' } } }
             }
         });
         @endif
