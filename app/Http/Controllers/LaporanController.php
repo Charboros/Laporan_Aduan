@@ -9,10 +9,23 @@ class LaporanController extends Controller
 {
     public function index(Request $request)
     {
-        $aduans = Aduan::with('petugas')
-            ->orderBy('tanggal_aduan', 'desc')
-            ->get();
+        $query = Aduan::with('petugas');
 
-        return view('laporan.index', compact('aduans'));
+        if ($request->filled('status')) {
+            $status = $request->status === 'sudah' ? true : false;
+            $query->where('sudah_direspon', $status);
+        }
+        if ($request->filled('kanal')) {
+            $query->where('kanal', $request->kanal);
+        }
+        if ($request->filled('tahun')) {
+            $query->whereYear('tanggal_aduan', $request->tahun);
+        }
+
+        $aduans = $query->orderBy('tanggal_aduan', 'desc')->get();
+        $listKanal = \App\Http\Controllers\AduanController::listKanal();
+        $listTahun = Aduan::daftarTahun()->pluck('tahun');
+
+        return view('laporan.index', compact('aduans', 'listKanal', 'listTahun'));
     }
 }

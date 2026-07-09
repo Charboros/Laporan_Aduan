@@ -139,9 +139,9 @@ class AduanController extends Controller
     // Export Excel
     // =========================================================
 
-    public function export()
+    public function export(Request $request)
     {
         $filename = 'Rekap_Aduan_Disdukcapil_' . date('Ymd_His') . '.xlsx';
-        return Excel::download(new AduanExport(), $filename);
+        return Excel::download(new AduanExport($request), $filename);
     }
 }

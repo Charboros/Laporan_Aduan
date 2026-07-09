@@ -7,7 +7,7 @@
                     Semua data aduan — {{ $aduans->count() }} aduan tercatat
                 </p>
             </div>
-            <a href="{{ route('aduan.export') }}"
+            <a href="{{ route('aduan.export', request()->query()) }}"
                class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700
                       text-white font-semibold py-2.5 px-5 rounded-xl text-sm transition shadow-sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -23,17 +23,53 @@
 
         {{-- Search & Filter Bar --}}
         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/60 flex flex-wrap items-center gap-3">
-            <div class="relative">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
-                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
-                </svg>
-                <input type="text" id="searchInput" placeholder="Cari nomor, kanal, klasifikasi..."
-                       class="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white
-                              focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400
-                              transition placeholder-slate-400 w-64">
-            </div>
+            <form action="{{ route('laporan.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full">
+                
+                {{-- Filter Status --}}
+                <select name="status" class="py-2 pl-3 pr-8 text-sm border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-200 outline-none">
+                    <option value="">Semua Status</option>
+                    <option value="sudah" {{ request('status') === 'sudah' ? 'selected' : '' }}>Sudah Direspon</option>
+                    <option value="belum" {{ request('status') === 'belum' ? 'selected' : '' }}>Belum Direspon</option>
+                </select>
+
+                {{-- Filter Kanal --}}
+                <select name="kanal" class="py-2 pl-3 pr-8 text-sm border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-200 outline-none">
+                    <option value="">Semua Kanal</option>
+                    @foreach($listKanal as $kanal)
+                        <option value="{{ $kanal }}" {{ request('kanal') === $kanal ? 'selected' : '' }}>{{ $kanal }}</option>
+                    @endforeach
+                </select>
+
+                {{-- Filter Tahun --}}
+                <select name="tahun" class="py-2 pl-3 pr-8 text-sm border border-slate-200 rounded-lg bg-white focus:ring-2 focus:ring-blue-200 outline-none">
+                    <option value="">Semua Tahun</option>
+                    @foreach($listTahun as $tahun)
+                        <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>{{ $tahun }}</option>
+                    @endforeach
+                </select>
+
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
+                    Filter
+                </button>
+                <a href="{{ route('laporan.index') }}" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-300 transition shadow-sm">
+                    Reset
+                </a>
+                
+                <div class="flex-1"></div>
+
+                {{-- JS Search --}}
+                <div class="relative w-full sm:w-64">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Cari di tabel ini..."
+                           class="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white
+                                  focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400
+                                  transition placeholder-slate-400 w-full">
+                </div>
+            </form>
         </div>
 
         {{-- Tabel --}}

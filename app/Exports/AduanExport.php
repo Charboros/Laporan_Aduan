@@ -27,11 +27,24 @@ class AduanExport implements
 {
     protected $aduans;
 
-    public function __construct()
+    public function __construct($request = null)
     {
-        $this->aduans = Aduan::with('petugas')
-            ->orderBy('tanggal_aduan', 'desc')
-            ->get();
+        $query = Aduan::with(['petugas', 'respon.user']);
+
+        if ($request) {
+            if ($request->filled('status')) {
+                $status = $request->status === 'sudah' ? true : false;
+                $query->where('sudah_direspon', $status);
+            }
+            if ($request->filled('kanal')) {
+                $query->where('kanal', $request->kanal);
+            }
+            if ($request->filled('tahun')) {
+                $query->whereYear('tanggal_aduan', $request->tahun);
+            }
+        }
+
+        $this->aduans = $query->orderBy('tanggal_aduan', 'desc')->get();
     }
 
     public function collection()
@@ -51,7 +64,9 @@ class AduanExport implements
                 'Isi Aduan'     => $aduan->isi_aduan,
                 'Caption'       => $aduan->caption      ?? '-',
                 'Status Respon' => $aduan->sudah_direspon ? 'Sudah Direspon' : 'Belum Direspon',
-                'Isi Respon'    => $aduan->isi_respon_awal ?? '-',
+                'Isi Respon'    => $aduan->respon->count() > 0 
+                                     ? $aduan->respon->pluck('isi_respon')->implode("\n\n") 
+                                     : '-',
                 'Petugas'       => $aduan->petugas->name ?? '-',
                 'Foto'          => '',  // placeholder untuk kolom gambar
             ];
