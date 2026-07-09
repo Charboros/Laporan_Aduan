@@ -1,4 +1,4 @@
-<x-app-layout>
+﻿<x-app-layout>
     <x-slot name="header">
         <div class="flex flex-wrap justify-between items-center gap-3">
             <div>
@@ -6,50 +6,21 @@
                 <p class="text-sm text-slate-500 mt-0.5">Daftar semua aduan yang telah diinput</p>
             </div>
             <div class="flex items-center gap-2">
-                {{-- Info/Stats ringkas bisa ditaruh di sini jika perlu --}}
+                {{-- Pencarian --}}
+                <div class="relative">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Cari aduan..."
+                           class="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-lg bg-white
+                                  focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400
+                                  transition placeholder-slate-400 w-48">
+                </div>
             </div>
         </div>
     </x-slot>
-
-    {{-- Filter Bar --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-6">
-        <form action="{{ route('aduan.data') }}" method="GET" class="flex flex-wrap items-center gap-3">
-            <div class="relative flex-1 min-w-[200px] sm:max-w-xs">
-                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0"/>
-                </svg>
-                <input type="text" id="searchInput" placeholder="Cari cepat di halaman ini..."
-                       class="pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-200 transition w-full">
-            </div>
-
-            <select name="status" class="py-2 pl-3 pr-8 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 outline-none">
-                <option value="">Semua Status</option>
-                <option value="sudah" {{ request('status') === 'sudah' ? 'selected' : '' }}>Sudah Direspon</option>
-                <option value="belum" {{ request('status') === 'belum' ? 'selected' : '' }}>Belum Direspon</option>
-            </select>
-
-            <select name="kanal" class="py-2 pl-3 pr-8 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 outline-none">
-                <option value="">Semua Kanal</option>
-                @foreach($listKanal as $kanal)
-                    <option value="{{ $kanal }}" {{ request('kanal') === $kanal ? 'selected' : '' }}>{{ $kanal }}</option>
-                @endforeach
-            </select>
-
-            <select name="tahun" class="py-2 pl-3 pr-8 text-sm border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-200 outline-none">
-                <option value="">Semua Tahun</option>
-                @foreach($listTahun as $tahun)
-                    <option value="{{ $tahun }}" {{ request('tahun') == $tahun ? 'selected' : '' }}>{{ $tahun }}</option>
-                @endforeach
-            </select>
-
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
-                Filter
-            </button>
-            <a href="{{ route('aduan.data') }}" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-300 transition shadow-sm">
-                Reset
-            </a>
-        </form>
-    </div>
 
     <div class="space-y-4" id="aduan-list">
         @forelse($aduans as $aduan)
@@ -151,6 +122,8 @@
                         @endif
                     </div>
                 </div>
+
+
 
             </div>{{-- end .aduan-card --}}
         @empty
