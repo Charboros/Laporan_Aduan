@@ -1,47 +1,346 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Login — Layanan Admas Disdukcapil Kab. Tegal</title>
+    <meta name="description" content="Sistem Manajemen Aduan Layanan Dinas Kependudukan dan Pencatatan Sipil Kabupaten Tegal">
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            background: #0f172a;
+        }
+
+        /* ── Panel Kiri: Branding ── */
+        .brand-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 2.5rem;
+            position: relative;
+            background: linear-gradient(145deg, #1e3a8a 0%, #1d4ed8 60%, #2563eb 100%);
+            overflow: hidden;
+        }
+        .brand-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 20% 20%, rgba(255,255,255,0.07) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 80%, rgba(96,165,250,0.15) 0%, transparent 55%);
+        }
+        .deco-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.07);
+        }
+        .deco-c1 { width: 450px; height: 450px; top: -120px; left: -120px; }
+        .deco-c2 { width: 320px; height: 320px; bottom: -90px; right: -90px; }
+        .deco-c3 { width: 220px; height: 220px; top: 55%; left: 50%; transform: translate(-50%,-50%); }
+
+        .brand-content { position: relative; z-index: 1; text-align: center; color: white; max-width: 380px; }
+
+        .logos-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+        .logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .logo-img {
+            width: 88px;
+            height: 88px;
+            object-fit: contain;
+            filter: drop-shadow(0 6px 16px rgba(0,0,0,0.35));
+            transition: transform 0.3s ease;
+        }
+        .logo-img:hover { transform: scale(1.06); }
+        .logo-divider { width: 1px; height: 65px; background: rgba(255,255,255,0.22); }
+        .logo-label {
+            font-size: 0.625rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: rgba(255,255,255,0.65);
+        }
+        .brand-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .brand-sub {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.72);
+            line-height: 1.65;
+            margin-bottom: 2.5rem;
+        }
+        .feature-list { display: flex; flex-direction: column; gap: 0.875rem; text-align: left; }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.82);
+        }
+        .feature-icon {
+            width: 30px;
+            height: 30px;
+            background: rgba(255,255,255,0.13);
+            border-radius: 7px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        /* ── Panel Kanan: Form ── */
+        .form-panel {
+            width: 430px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2.5rem 2.5rem;
+            background: #f8fafc;
+            overflow-y: auto;
+        }
+        .form-header { margin-bottom: 1.75rem; }
+        .form-header h2 { font-size: 1.6rem; font-weight: 800; color: #0f172a; margin: 0 0 0.35rem; }
+        .form-header p { font-size: 0.875rem; color: #64748b; margin: 0; }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.75rem;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.07), 0 1px 4px rgba(0,0,0,0.04);
+            border: 1px solid #e2e8f0;
+        }
+        .form-group { margin-bottom: 1.25rem; }
+        .form-label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #475569;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .form-input {
+            width: 100%;
+            padding: 0.65rem 0.875rem;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            background: #f8fafc;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+        .form-input:focus {
+            border-color: #3b82f6;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .error-text { color: #dc2626; font-size: 0.78rem; margin-top: 0.3rem; }
+
+        .remember-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+        .remember-row input { accent-color: #3b82f6; cursor: pointer; }
+        .remember-row label { font-size: 0.85rem; color: #64748b; cursor: pointer; }
+
+        .btn-login {
+            width: 100%;
+            padding: 0.78rem 1.5rem;
+            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+            color: white;
+            font-weight: 700;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px rgba(29,78,216,0.35);
+        }
+        .btn-login:hover {
+            background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
+            box-shadow: 0 6px 18px rgba(29,78,216,0.45);
+            transform: translateY(-1px);
+        }
+        .btn-login:active { transform: translateY(0); }
+
+        .alert-status {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+            padding: 0.65rem 0.875rem;
+            border-radius: 8px;
+            font-size: 0.83rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Demo accounts */
+        .demo-accounts {
+            margin-top: 1.25rem;
+            background: #f1f5f9;
+            border-radius: 10px;
+            padding: 0.875rem 1rem;
+        }
+        .demo-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.07em;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+        .demo-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.78rem;
+            padding: 0.3rem 0;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+        .demo-row:last-child { border-bottom: none; }
+        .demo-role { font-weight: 700; color: #1d4ed8; min-width: 60px; }
+        .demo-name { font-family: monospace; color: #334155; }
+        .demo-pass { color: #94a3b8; font-size: 0.72rem; }
+
+        @media (max-width: 800px) {
+            body { flex-direction: column; }
+            .brand-panel { padding: 2rem 1.5rem; flex: none; min-height: 280px; }
+            .form-panel { width: 100%; padding: 2rem 1.5rem; }
+            .logo-img { width: 68px; height: 68px; }
+        }
+    </style>
+</head>
+<body>
+
+    {{-- ── Panel Kiri: Branding ── --}}
+    <div class="brand-panel">
+        <div class="deco-circle deco-c1"></div>
+        <div class="deco-circle deco-c2"></div>
+        <div class="deco-circle deco-c3"></div>
+
+        <div class="brand-content">
+            <div class="logos-row">
+                <div class="logo-wrap">
+                    <img src="{{ asset('images/kemendagri-logo.png') }}"
+                         alt="Logo Kementerian Dalam Negeri" class="logo-img">
+                    <span class="logo-label">Kemendagri</span>
+                </div>
+                <div class="logo-divider"></div>
+                <div class="logo-wrap">
+                    <img src="{{ asset('images/tegal-logo.png') }}"
+                         alt="Logo Kabupaten Tegal" class="logo-img">
+                    <span class="logo-label">Kab. Tegal</span>
+                </div>
+            </div>
+
+            <div class="brand-title">Layanan Admas</div>
+            <p class="brand-sub">
+                Sistem Manajemen Aduan Layanan Administrasi Kependudukan<br>
+                <strong style="color:rgba(255,255,255,0.9);">Disdukcapil Kabupaten Tegal</strong>
+            </p>
+
+            <div class="feature-list">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                        </svg>
+                    </div>
+                    Input & Pengelolaan Aduan Masyarakat
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
+                    </div>
+                    Respon & Tindak Lanjut Cepat
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <svg width="14" height="14" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    Rekap & Ekspor Laporan Excel
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- ── Panel Kanan: Form Login ── --}}
+    <div class="form-panel">
+        <div class="form-header">
+            <h2>Selamat Datang</h2>
+            <p>Masuk menggunakan akun yang telah diberikan.</p>
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
+        <div class="form-card">
+            @if (session('status'))
+                <div class="alert-status">{{ session('status') }}</div>
             @endif
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+
+                <div class="form-group">
+                    <label for="name" class="form-label">Nama Pengguna</label>
+                    <input id="name" type="text" name="name" value="{{ old('name') }}"
+                           class="form-input" required autofocus autocomplete="username"
+                           placeholder="Contoh: Admin">
+                    @error('name')
+                        <p class="error-text">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input id="password" type="password" name="password"
+                           class="form-input" required autocomplete="current-password"
+                           placeholder="••••••••••">
+                    @error('password')
+                        <p class="error-text">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div class="remember-row">
+                    <input id="remember_me" type="checkbox" name="remember">
+                    <label for="remember_me">Ingat saya di perangkat ini</label>
+                </div>
+
+                <button type="submit" class="btn-login">
+                    Masuk ke Sistem →
+                </button>
+            </form>
         </div>
-    </form>
-</x-guest-layout>
+    </div>
+</body>
+</html>

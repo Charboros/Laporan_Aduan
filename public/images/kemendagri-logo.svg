@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 520" role="img" aria-label="Logo Kementerian Dalam Negeri">
+  <!-- Shield background -->
+  <path d="M200 10 L380 80 L380 300 Q380 450 200 510 Q20 450 20 300 L20 80 Z" fill="#1a3a6e"/>
+  <!-- Gold border -->
+  <path d="M200 25 L365 90 L365 300 Q365 440 200 495 Q35 440 35 300 L35 90 Z" fill="none" stroke="#c8a420" stroke-width="8"/>
+  
+  <!-- Garuda body (simplified) -->
+  <ellipse cx="200" cy="220" rx="75" ry="85" fill="#c8a420"/>
+  <!-- Head -->
+  <circle cx="200" cy="145" r="35" fill="#c8a420"/>
+  <!-- Crown/crest -->
+  <path d="M175 120 L185 100 L200 115 L215 100 L225 120 Z" fill="#c8a420"/>
+  <!-- Stars on crest -->
+  <polygon points="200,95 203,104 212,104 205,110 208,119 200,113 192,119 195,110 188,104 197,104" fill="#1a3a6e" transform="scale(0.7) translate(86,40)"/>
+  
+  <!-- Wings -->
+  <path d="M125 200 C80 170 40 190 30 230 C50 210 90 215 125 230 Z" fill="#c8a420"/>
+  <path d="M275 200 C320 170 360 190 370 230 C350 210 310 215 275 230 Z" fill="#c8a420"/>
+  
+  <!-- Shield on chest -->
+  <path d="M175 200 L225 200 L225 255 L200 270 L175 255 Z" fill="#dc2626"/>
+  <path d="M175 200 L225 200 L225 228 L175 228 Z" fill="#f8f8f8"/>
+  <!-- Bull head on shield -->
+  <ellipse cx="200" cy="215" rx="12" ry="10" fill="#1a3a6e"/>
+  
+  <!-- Tail feathers -->
+  <path d="M170 290 L185 320 L200 295 L215 320 L230 290 L215 305 L200 285 L185 305 Z" fill="#c8a420"/>
+  
+  <!-- Leaves left -->
+  <path d="M55 320 C30 290 25 250 45 230 C55 270 70 300 85 320 Z" fill="#2d8a2d"/>
+  <path d="M60 340 C30 315 20 275 40 255 C52 295 68 325 90 340 Z" fill="#2d8a2d"/>
+  <path d="M65 360 C32 340 18 300 38 278 C52 318 70 350 95 362 Z" fill="#2d8a2d"/>
+  <path d="M72 380 C38 364 22 325 42 302 C58 342 76 374 102 384 Z" fill="#2d8a2d"/>
+  
+  <!-- Leaves right -->
+  <path d="M345 320 C370 290 375 250 355 230 C345 270 330 300 315 320 Z" fill="#2d8a2d"/>
+  <path d="M340 340 C370 315 380 275 360 255 C348 295 332 325 310 340 Z" fill="#2d8a2d"/>
+  <path d="M335 360 C368 340 382 300 362 278 C348 318 330 350 305 362 Z" fill="#2d8a2d"/>
+  <path d="M328 380 C362 364 378 325 358 302 C342 342 324 374 298 384 Z" fill="#2d8a2d"/>
+
+  <!-- Cotton flowers left -->
+  <circle cx="58" cy="300" r="8" fill="white" opacity="0.9"/>
+  <circle cx="65" cy="410" r="8" fill="white" opacity="0.9"/>
+  
+  <!-- Cotton flowers right -->
+  <circle cx="342" cy="300" r="8" fill="white" opacity="0.9"/>
+  <circle cx="335" cy="410" r="8" fill="white" opacity="0.9"/>
+
+  <!-- Banner -->
+  <path d="M80 420 L130 405 L200 415 L270 405 L320 420 L270 435 L200 445 L130 435 Z" fill="#c8a420"/>
+  <text x="200" y="432" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#1a3a6e">KEMENTERIAN DALAM NEGERI</text>
+</svg>

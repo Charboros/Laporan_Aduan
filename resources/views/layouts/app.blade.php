@@ -4,9 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Layanan Admas') }}</title>
+    <title>{{ config('app.name', 'Layanan Admas') }} — Disdukcapil Kab. Tegal</title>
 
-    {{-- Font: Inter dari Google Fonts --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -16,28 +15,206 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
 
-        /* Sidebar nav link transition */
-        .nav-link {
+        /* ── Sidebar ── */
+        .sidebar {
+            width: 68px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(160deg, #1e3a8a 0%, #1d4ed8 60%, #2563eb 100%);
+            transition: width 0.25s cubic-bezier(0.4,0,0.2,1);
+            overflow: hidden;
+            position: relative;
+            z-index: 50;
+        }
+        .sidebar:hover { width: 230px; }
+
+        /* Brand */
+        .sidebar-brand {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            padding: 0 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+            gap: 0.75rem;
+            white-space: nowrap;
+        }
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .brand-text {
+            opacity: 0;
+            transition: opacity 0.15s 0.05s;
+            pointer-events: none;
+        }
+        .sidebar:hover .brand-text { opacity: 1; }
+        .brand-text p:first-child { font-size: 0.8rem; font-weight: 700; color: white; margin: 0; }
+        .brand-text p:last-child { font-size: 0.65rem; color: rgba(255,255,255,0.65); margin: 0; }
+
+        /* Nav */
+        .sidebar-nav { flex: 1; padding: 1rem 0.625rem; display: flex; flex-direction: column; gap: 0.25rem; overflow: hidden; }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.65rem 0.875rem;
+            border-radius: 10px;
+            font-size: 0.83rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            position: relative;
+            min-height: 44px;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.14);
+            color: white;
+        }
+        .nav-item.active {
+            background: rgba(255,255,255,0.18);
+            color: white;
+            font-weight: 600;
+        }
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+            opacity: 0.8;
+            transition: opacity 0.15s;
+        }
+        .nav-item:hover .nav-icon,
+        .nav-item.active .nav-icon { opacity: 1; }
+        .nav-label {
+            opacity: 0;
+            transition: opacity 0.12s 0.05s;
+            pointer-events: none;
+        }
+        .sidebar:hover .nav-label { opacity: 1; }
+
+        /* Tooltip saat sidebar collapsed */
+        .nav-tooltip {
+            position: absolute;
+            left: calc(100% + 8px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1e293b;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.4rem 0.75rem;
+            border-radius: 8px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        .nav-tooltip::before {
+            content: '';
+            position: absolute;
+            right: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 5px solid transparent;
+            border-right-color: #1e293b;
+        }
+        .nav-item:hover .nav-tooltip { opacity: 1; }
+        .sidebar:hover .nav-tooltip { display: none; }
+
+        /* Divider label */
+        .nav-section-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.35);
+            padding: 0 0.875rem;
+            margin-top: 0.5rem;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.12s;
+        }
+        .sidebar:hover .nav-section-label { opacity: 1; }
+
+        /* User bottom */
+        .sidebar-user {
+            padding: 0.875rem 0.625rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            flex-shrink: 0;
+        }
+        .user-row {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.625rem 1rem;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.15s ease;
-            color: #bfdbfe;
+            padding: 0.5rem 0.375rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
         }
-        .nav-link:hover  { background: rgba(255,255,255,0.1); color: #fff; }
-        .nav-link.active { background: rgba(255,255,255,0.18); color: #fff; font-weight: 600; }
-        .nav-link .nav-icon { opacity: 0.8; transition: opacity 0.15s; }
-        .nav-link:hover .nav-icon,
-        .nav-link.active .nav-icon { opacity: 1; }
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: white;
+            flex-shrink: 0;
+        }
+        .user-info {
+            opacity: 0;
+            transition: opacity 0.12s 0.05s;
+            pointer-events: none;
+        }
+        .sidebar:hover .user-info { opacity: 1; }
+        .user-info p:first-child { font-size: 0.8rem; font-weight: 600; color: white; margin: 0; }
+        .user-info p:last-child {
+            font-size: 0.68rem;
+            color: rgba(255,255,255,0.6);
+            margin: 0;
+            text-transform: capitalize;
+        }
+        .btn-logout {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 10px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.08);
+            border: none;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-logout:hover {
+            background: rgba(239,68,68,0.6);
+            color: white;
+        }
+        .btn-logout-text { opacity: 0; transition: opacity 0.1s; }
+        .sidebar:hover .btn-logout-text { opacity: 1; }
 
-        /* Alert toast */
-        .alert-toast {
-            animation: slideDown 0.3s ease;
-        }
+        /* ── Alert Toast ── */
+        .alert-toast { animation: slideDown 0.3s ease; }
         @keyframes slideDown {
             from { opacity: 0; transform: translateY(-8px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -46,84 +223,106 @@
 </head>
 <body class="antialiased bg-slate-100 flex h-screen overflow-hidden">
 
-    {{-- ======================================================= --}}
-    {{-- SIDEBAR --}}
-    {{-- ======================================================= --}}
-    <aside class="w-64 shrink-0 flex flex-col"
-           style="background: linear-gradient(160deg, #1e3a8a 0%, #1d4ed8 60%, #2563eb 100%);">
+    {{-- ══════════════ SIDEBAR ══════════════ --}}
+    <aside class="sidebar">
 
-        {{-- Logo / Brand --}}
-        <div class="h-16 flex items-center px-6 border-b border-white/10 shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0">
-                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/>
-                        <path d="M3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762z"/>
-                        <path d="M9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0z"/>
-                    </svg>
-                </div>
-                <div class="leading-tight">
-                    <p class="text-white font-bold text-sm">Layanan Admas</p>
-                    <p class="text-blue-200 text-xs">Disdukcapil Kab. Tegal</p>
-                </div>
+        {{-- Brand --}}
+        <div class="sidebar-brand">
+            <div class="brand-icon">
+                <svg width="18" height="18" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <p>Layanan Admas</p>
+                <p>Disdukcapil Kab. Tegal</p>
             </div>
         </div>
 
         {{-- Navigation --}}
-        <nav class="flex-1 px-4 py-5 space-y-1 overflow-y-auto">
-            <p class="text-blue-300/70 text-xs font-semibold uppercase tracking-wider px-2 mb-3">Menu</p>
+        <nav class="sidebar-nav">
+            <span class="nav-section-label">Menu Utama</span>
 
+            {{-- Dashboard --}}
             <a href="{{ route('dashboard') }}"
-               class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <svg class="nav-icon w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+               class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
                           d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
-                Dashboard
+                <span class="nav-label">Dashboard</span>
+                <span class="nav-tooltip">Dashboard</span>
             </a>
 
-            <a href="{{ route('aduan.index') }}"
-               class="nav-link {{ request()->routeIs('aduan.*') ? 'active' : '' }}">
-                <svg class="nav-icon w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            {{-- Input Aduan --}}
+            <a href="{{ route('aduan.create') }}"
+               class="nav-item {{ request()->routeIs('aduan.create') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M12 4v16m8-8H4"/>
                 </svg>
-                Data Aduan
+                <span class="nav-label">Input Aduan</span>
+                <span class="nav-tooltip">Input Aduan</span>
+            </a>
+
+            {{-- Data Aduan --}}
+            <a href="{{ route('aduan.data') }}"
+               class="nav-item {{ request()->routeIs('aduan.data') || request()->routeIs('aduan.show') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M4 7h16M4 12h16M4 17h10"/>
+                </svg>
+                <span class="nav-label">Data Aduan</span>
+                <span class="nav-tooltip">Data Aduan</span>
+            </a>
+
+            {{-- Rekap --}}
+            <a href="{{ route('laporan.index') }}"
+               class="nav-item {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+                <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                <span class="nav-label">Rekap</span>
+                <span class="nav-tooltip">Rekap & Export</span>
             </a>
         </nav>
 
         {{-- User Info + Logout --}}
-        <div class="p-4 border-t border-white/10 shrink-0">
-            @php $initials = strtoupper(substr(Auth::user()->name, 0, 1)); @endphp
-            <div class="flex items-center gap-3 mb-3">
-                <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center shrink-0">
-                    <span class="text-white font-bold text-sm">{{ $initials }}</span>
-                </div>
-                <div class="min-w-0">
-                    <p class="text-white text-sm font-semibold truncate">{{ Auth::user()->name }}</p>
-                    <p class="text-blue-200 text-xs truncate">{{ ucfirst(Auth::user()->role) }}</p>
+        <div class="sidebar-user">
+            @php
+                $user     = Auth::user();
+                $initials = strtoupper(substr($user->name, 0, 1));
+                $roleLabel = match($user->role) {
+                    'admin'   => 'Administrator',
+                    'kabid'   => 'Kepala Bidang',
+                    'petugas' => 'Petugas',
+                    default   => ucfirst($user->role),
+                };
+            @endphp
+            <div class="user-row">
+                <div class="user-avatar">{{ $initials }}</div>
+                <div class="user-info">
+                    <p>{{ $user->name }}</p>
+                    <p>{{ $roleLabel }}</p>
                 </div>
             </div>
+
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit"
-                        class="w-full flex items-center justify-center gap-2 px-3 py-2
-                               rounded-lg text-sm font-medium text-blue-100
-                               bg-white/10 hover:bg-red-500/80 hover:text-white
-                               transition-all duration-150">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                <button type="submit" class="btn-logout">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
                               d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
-                    Keluar
+                    <span class="btn-logout-text">Keluar</span>
                 </button>
             </form>
         </div>
     </aside>
 
-    {{-- ======================================================= --}}
-    {{-- MAIN CONTENT --}}
-    {{-- ======================================================= --}}
+    {{-- ══════════════ MAIN CONTENT ══════════════ --}}
     <div class="flex-1 flex flex-col overflow-hidden">
 
         {{-- Top Header --}}
@@ -148,6 +347,8 @@
                               clip-rule="evenodd"/>
                     </svg>
                     <span class="text-sm font-medium">{{ session('success') }}</span>
+                    <button onclick="this.parentElement.remove()"
+                            class="ml-auto text-emerald-500 hover:text-emerald-700 transition">✕</button>
                 </div>
             @endif
 
@@ -161,6 +362,8 @@
                               clip-rule="evenodd"/>
                     </svg>
                     <span class="text-sm font-medium">{{ session('error') }}</span>
+                    <button onclick="this.parentElement.remove()"
+                            class="ml-auto text-red-500 hover:text-red-700 transition">✕</button>
                 </div>
             @endif
 

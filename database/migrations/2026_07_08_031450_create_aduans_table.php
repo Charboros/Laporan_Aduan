@@ -6,29 +6,25 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
-{
-    Schema::create('aduans', function (Blueprint $table) {
-        $table->id();
-        $table->string('nomor_aduan')->unique(); // Contoh: ADU-2026-001
-        $table->string('nama_pelapor');
-        $table->string('kontak_pelapor')->nullable();
-        $table->text('isi_aduan');
-        $table->string('kategori');
-        $table->date('tanggal_aduan');
-        $table->enum('status', ['Pending', 'Diproses', 'Selesai'])->default('Pending');
-        // Relasi ke tabel users (Petugas yang menginputkan)
-        $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('aduans', function (Blueprint $table) {
+            $table->id();
+            $table->string('nomor_aduan')->unique();
+            $table->string('kanal');
+            $table->string('klasifikasi');
+            $table->string('nama_akun')->nullable();
+            $table->text('isi_aduan');
+            $table->string('caption')->nullable();
+            $table->date('tanggal_aduan');
+            $table->time('waktu_aduan')->nullable();
+            $table->string('screenshot_path')->nullable();
+            $table->boolean('sudah_direspon')->default(false);
+            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->timestamps();
+        });
+    }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('aduans');

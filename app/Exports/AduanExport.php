@@ -9,14 +9,13 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\AfterSheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Drawing;
 
 class AduanExport implements
     FromCollection,
@@ -30,18 +29,9 @@ class AduanExport implements
 
     public function __construct()
     {
-        $user = Auth::user();
-
-        if ($user->role === 'petugas') {
-            $this->aduans = Aduan::with('petugas')
-                ->where('created_by', $user->id)
-                ->orderBy('tanggal_aduan', 'desc')
-                ->get();
-        } else {
-            $this->aduans = Aduan::with('petugas')
-                ->orderBy('tanggal_aduan', 'desc')
-                ->get();
-        }
+        $this->aduans = Aduan::with('petugas')
+            ->orderBy('tanggal_aduan', 'desc')
+            ->get();
     }
 
     public function collection()
@@ -49,20 +39,21 @@ class AduanExport implements
         $no = 1;
         return $this->aduans->map(function ($aduan) use (&$no) {
             return [
-                'No'              => $no++,
-                'Nomor Aduan'     => $aduan->nomor_aduan,
-                'Tanggal'         => $aduan->tanggal_aduan
-                                        ? $aduan->tanggal_aduan->format('d/m/Y')
-                                        : '-',
-                'Kanal'           => $aduan->kanal        ?? '-',
-                'Klasifikasi'     => $aduan->klasifikasi  ?? '-',
-                'Nama Pelapor'    => $aduan->nama_pelapor,
-                'Nama Akun'       => $aduan->nama_akun    ?? '-',
-                'Kontak'          => $aduan->kontak_pelapor ?? '-',
-                'Isi Aduan'       => $aduan->isi_aduan,
-                'Status Respon'   => $aduan->sudah_direspon ? 'Sudah Direspon' : 'Belum Direspon',
-                'Isi Respon'      => $aduan->isi_respon_awal ?? '-',
-                'Petugas Input'   => $aduan->petugas->name ?? '-',
+                'No'            => $no++,
+                'Nomor Aduan'   => $aduan->nomor_aduan,
+                'Tanggal'       => $aduan->tanggal_aduan
+                                    ? $aduan->tanggal_aduan->format('d/m/Y')
+                                    : '-',
+                'Waktu'         => $aduan->waktu_aduan ?? '-',
+                'Kanal'         => $aduan->kanal        ?? '-',
+                'Klasifikasi'   => $aduan->klasifikasi  ?? '-',
+                'Nama Akun'     => $aduan->nama_akun    ?? '-',
+                'Isi Aduan'     => $aduan->isi_aduan,
+                'Caption'       => $aduan->caption      ?? '-',
+                'Status Respon' => $aduan->sudah_direspon ? 'Sudah Direspon' : 'Belum Direspon',
+                'Isi Respon'    => $aduan->isi_respon_awal ?? '-',
+                'Petugas'       => $aduan->petugas->name ?? '-',
+                'Foto'          => '',  // placeholder untuk kolom gambar
             ];
         });
     }
@@ -70,18 +61,9 @@ class AduanExport implements
     public function headings(): array
     {
         return [
-            'No',
-            'Nomor Aduan',
-            'Tanggal',
-            'Kanal',
-            'Klasifikasi',
-            'Nama Pelapor',
-            'Nama Akun Sosmed',
-            'Kontak',
-            'Isi Aduan',
-            'Status Respon',
-            'Isi Respon',
-            'Petugas Input',
+            'No', 'Nomor Aduan', 'Tanggal', 'Waktu', 'Kanal', 'Klasifikasi',
+            'Nama Akun', 'Isi Aduan', 'Caption', 'Status Respon', 'Isi Respon',
+            'Petugas', 'Foto',
         ];
     }
 
@@ -89,26 +71,27 @@ class AduanExport implements
     {
         return [
             'A' => 5,   // No
-            'B' => 18,  // Nomor Aduan
-            'C' => 14,  // Tanggal
-            'D' => 16,  // Kanal
-            'E' => 16,  // Klasifikasi
-            'F' => 22,  // Nama Pelapor
-            'G' => 20,  // Nama Akun Sosmed
-            'H' => 20,  // Kontak
-            'I' => 50,  // Isi Aduan
+            'B' => 17,  // Nomor Aduan
+            'C' => 13,  // Tanggal
+            'D' => 10,  // Waktu
+            'E' => 14,  // Kanal
+            'F' => 30,  // Klasifikasi
+            'G' => 20,  // Nama Akun
+            'H' => 50,  // Isi Aduan
+            'I' => 35,  // Caption
             'J' => 18,  // Status Respon
             'K' => 45,  // Isi Respon
-            'L' => 22,  // Petugas Input
+            'L' => 18,  // Petugas
+            'M' => 22,  // Foto
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
-        $totalRows = $this->aduans->count() + 2; // +1 header +1 karena mulai dari baris 2
+        $totalRows = $this->aduans->count() + 1;
 
-        // Header styling (baris 1)
-        $sheet->getStyle('A1:L1')->applyFromArray([
+        // Header row
+        $sheet->getStyle('A1:M1')->applyFromArray([
             'font' => [
                 'bold'  => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -116,7 +99,7 @@ class AduanExport implements
             ],
             'fill' => [
                 'fillType'   => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '1E40AF'], // biru tua
+                'startColor' => ['rgb' => '1E40AF'],
             ],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
@@ -130,22 +113,19 @@ class AduanExport implements
                 ],
             ],
         ]);
+        $sheet->getRowDimension(1)->setRowHeight(32);
 
-        // Tinggi baris header
-        $sheet->getRowDimension(1)->setRowHeight(30);
-
-        // Styling data rows
+        // Data rows
         if ($totalRows > 1) {
-            // Baris genap & ganjil (zebra striping)
             for ($row = 2; $row <= $totalRows; $row++) {
-                $bgColor = ($row % 2 === 0) ? 'EFF6FF' : 'FFFFFF'; // biru muda / putih
+                $bgColor = ($row % 2 === 0) ? 'EFF6FF' : 'FFFFFF';
 
-                $sheet->getStyle("A{$row}:L{$row}")->applyFromArray([
+                $sheet->getStyle("A{$row}:M{$row}")->applyFromArray([
                     'fill' => [
                         'fillType'   => Fill::FILL_SOLID,
                         'startColor' => ['rgb' => $bgColor],
                     ],
-                    'font' => ['size' => 10],
+                    'font'      => ['size' => 10],
                     'alignment' => [
                         'vertical' => Alignment::VERTICAL_TOP,
                         'wrapText' => true,
@@ -157,37 +137,25 @@ class AduanExport implements
                         ],
                     ],
                 ]);
-
-                // Tinggi baris data
-                $sheet->getRowDimension($row)->setRowHeight(60);
+                $sheet->getRowDimension($row)->setRowHeight(70);
             }
 
-            // Kolom No: rata tengah
+            // Center alignment columns
             $sheet->getStyle("A2:A{$totalRows}")->getAlignment()
                 ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-            // Kolom Tanggal: rata tengah
-            $sheet->getStyle("C2:C{$totalRows}")->getAlignment()
+            $sheet->getStyle("C2:D{$totalRows}")->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle("E2:F{$totalRows}")->getAlignment()
                 ->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-            // Kolom Kanal & Klasifikasi: rata tengah
-            $sheet->getStyle("D2:E{$totalRows}")->getAlignment()
-                ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-            // Kolom Status Respon: rata tengah + warna sesuai status
+            // Status respon color
             for ($row = 2; $row <= $totalRows; $row++) {
-                $cellValue = $sheet->getCell("J{$row}")->getValue();
-                if ($cellValue === 'Sudah Direspon') {
-                    $sheet->getStyle("J{$row}")->applyFromArray([
-                        'font' => ['color' => ['rgb' => '15803D'], 'bold' => true],
-                    ]);
-                } else {
-                    $sheet->getStyle("J{$row}")->applyFromArray([
-                        'font' => ['color' => ['rgb' => 'DC2626'], 'bold' => true],
-                    ]);
-                }
-                $sheet->getStyle("J{$row}")->getAlignment()
-                    ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $val = $sheet->getCell("J{$row}")->getValue();
+                $color = $val === 'Sudah Direspon' ? '15803D' : 'DC2626';
+                $sheet->getStyle("J{$row}")->applyFromArray([
+                    'font'      => ['color' => ['rgb' => $color], 'bold' => true],
+                    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                ]);
             }
         }
 
@@ -203,31 +171,68 @@ class AduanExport implements
     {
         return [
             AfterSheet::class => function (AfterSheet $event) {
-                $sheet = $event->sheet->getDelegate();
+                $sheet     = $event->sheet->getDelegate();
+                $spreadsheet = $event->sheet->getDelegate()->getParent();
 
-                // Freeze baris header agar tetap terlihat saat scroll
-                $sheet->freezePane('A2');
+                // Row 1 keterangan instansi di atas header (insert 2 baris)
+                $sheet->insertNewRowBefore(1, 2);
 
-                // Auto filter pada header
-                $sheet->setAutoFilter('A1:L1');
+                // Merge dan isi keterangan
+                $sheet->mergeCells('A1:M1');
+                $sheet->setCellValue('A1', 'REKAP ADUAN LAYANAN — DISDUKCAPIL KABUPATEN TEGAL');
+                $sheet->getStyle('A1')->applyFromArray([
+                    'font'      => ['bold' => true, 'size' => 13, 'color' => ['rgb' => '1E3A8A']],
+                    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+                ]);
+                $sheet->getRowDimension(1)->setRowHeight(30);
 
-                // Set print area & orientasi landscape
+                $sheet->mergeCells('A2:M2');
+                $sheet->setCellValue('A2', 'Tanggal Export: ' . now()->isoFormat('D MMMM Y'));
+                $sheet->getStyle('A2')->applyFromArray([
+                    'font'      => ['size' => 10, 'color' => ['rgb' => '64748B'], 'italic' => true],
+                    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+                ]);
+                $sheet->getRowDimension(2)->setRowHeight(20);
+
+                // Embed gambar screenshot
+                $row = 4; // data starts at row 4 (header at row 3, 2 info rows above)
+                foreach ($this->aduans as $aduan) {
+                    if ($aduan->screenshot_path) {
+                        $filePath = storage_path('app/public/' . $aduan->screenshot_path);
+                        if (file_exists($filePath)) {
+                            $drawing = new Drawing();
+                            $drawing->setName('Screenshot');
+                            $drawing->setDescription('Bukti Aduan');
+                            $drawing->setPath($filePath);
+                            $drawing->setHeight(60);
+                            $drawing->setCoordinates('M' . $row);
+                            $drawing->setOffsetX(4);
+                            $drawing->setOffsetY(4);
+                            $drawing->setWorksheet($sheet);
+                        }
+                    }
+                    $row++;
+                }
+
+                // Freeze header
+                $sheet->freezePane('A4');
+
+                // Auto filter
+                $lastRow = $this->aduans->count() + 3;
+                $sheet->setAutoFilter('A3:M3');
+
+                // Print settings
                 $sheet->getPageSetup()
                     ->setOrientation(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::ORIENTATION_LANDSCAPE)
                     ->setFitToWidth(1)
                     ->setFitToHeight(0)
                     ->setPaperSize(\PhpOffice\PhpSpreadsheet\Worksheet\PageSetup::PAPERSIZE_A3);
 
-                // Print title (header berulang di setiap halaman)
-                $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(1, 1);
-
-                // Margin cetak
+                $sheet->getPageSetup()->setRowsToRepeatAtTopByStartAndEnd(3, 3);
                 $sheet->getPageMargins()->setTop(0.5)->setBottom(0.5)->setLeft(0.5)->setRight(0.5);
 
-                // Nama sheet tab dengan tanggal generate
-                $event->sheet->getDelegate()->getParent()
-                    ->getActiveSheet()
-                    ->setTitle('Aduan_' . date('Ymd'));
+                // Tab name
+                $sheet->setTitle('Aduan_' . date('Ymd'));
             },
         ];
     }

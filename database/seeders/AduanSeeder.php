@@ -1,0 +1,124 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Aduan;
+use App\Models\User;
+use App\Models\ResponAduan;
+use Illuminate\Database\Seeder;
+
+class AduanSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $petugas = User::where('role', 'petugas')->first() ?? User::first();
+        $admin   = User::where('role', 'admin')->first() ?? User::first();
+        $kabid   = User::where('role', 'kabid')->first() ?? User::first();
+
+        $data = [
+            [
+                'nomor_aduan'    => 'ADU-2026-001',
+                'kanal'          => 'IG',
+                'klasifikasi'    => 'Pelayanan Pencatatan Sipil',
+                'nama_akun'      => 'Siti Aminah',
+                'isi_aduan'      => 'Warga atas nama Siti Aminah melaporkan kesulitan mengurus akta kelahiran anaknya karena dokumen persyaratan kurang jelas.',
+                'caption'        => 'Laporan via Instagram DM',
+                'sudah_direspon' => true,
+                'tanggal_aduan'  => now()->subDays(3)->toDateString(),
+                'waktu_aduan'    => '09:30',
+                'screenshot_path'=> null,
+                'created_by'     => $petugas->id,
+                'respon'         => [
+                    [
+                        'respon_by' => $petugas->id,
+                        'isi_respon' => 'Terima kasih atas laporan Anda. Dokumen persyaratan sudah kami kirimkan melalui pesan langsung.',
+                        'tanggal_respon' => now()->subDays(3)->addHours(2),
+                    ]
+                ]
+            ],
+            [
+                'nomor_aduan'    => 'ADU-2026-002',
+                'kanal'          => 'FB',
+                'klasifikasi'    => 'Rekam/Cetak/KTP/KIA',
+                'nama_akun'      => 'Budi Santoso',
+                'isi_aduan'      => 'Saya mengeluhkan proses perekaman KTP yang terlalu lama, sudah 2 minggu belum selesai.',
+                'caption'        => 'Komentar di halaman Facebook resmi',
+                'sudah_direspon' => false,
+                'tanggal_aduan'  => now()->subDays(1)->toDateString(),
+                'waktu_aduan'    => '14:15',
+                'screenshot_path'=> null,
+                'created_by'     => $petugas->id,
+            ],
+            [
+                'nomor_aduan'    => 'ADU-2026-003',
+                'kanal'          => 'Gmaps Review',
+                'klasifikasi'    => 'Pelayanan Pendaftaran Penduduk',
+                'nama_akun'      => 'Joko Tingkir',
+                'isi_aduan'      => 'Antrian panjang dan sistem nomor antrian yang tidak tertib. Tolong diperbaiki fasilitasnya.',
+                'caption'        => 'Review bintang 2 di Google Maps',
+                'sudah_direspon' => true,
+                'tanggal_aduan'  => now()->subDays(7)->toDateString(),
+                'waktu_aduan'    => '10:00',
+                'screenshot_path'=> null,
+                'created_by'     => $admin->id,
+                'respon'         => [
+                    [
+                        'respon_by' => $kabid->id,
+                        'isi_respon' => 'Kami mohon maaf atas ketidaknyamanan ini. Kami sedang memperbaiki sistem antrian dan memperluas ruang tunggu.',
+                        'tanggal_respon' => now()->subDays(6)->addHours(1),
+                    ]
+                ]
+            ],
+            [
+                'nomor_aduan'    => 'ADU-2026-004',
+                'kanal'          => 'IG',
+                'klasifikasi'    => 'Infrastruktur',
+                'nama_akun'      => 'Rina Wijaya',
+                'isi_aduan'      => 'Kondisi toilet di kantor pelayanan kurang bersih dan perlu perhatian segera.',
+                'caption'        => 'Story Instagram dengan tag lokasi',
+                'sudah_direspon' => false,
+                'tanggal_aduan'  => now()->subDays(10)->toDateString(),
+                'waktu_aduan'    => '11:30',
+                'screenshot_path'=> null,
+                'created_by'     => $petugas->id,
+            ],
+            [
+                'nomor_aduan'    => 'ADU-2026-005',
+                'kanal'          => 'Lainnya',
+                'klasifikasi'    => 'Lainnya: Pertanyaan Umum',
+                'nama_akun'      => 'Andi Prasetyo',
+                'isi_aduan'      => 'Apakah besok buka melayani legalisir KK?',
+                'caption'        => null,
+                'sudah_direspon' => true,
+                'tanggal_aduan'  => now()->subDays(12)->toDateString(),
+                'waktu_aduan'    => '08:45',
+                'screenshot_path'=> null,
+                'created_by'     => $petugas->id,
+                'respon'         => [
+                    [
+                        'respon_by' => $petugas->id,
+                        'isi_respon' => 'Halo Bapak Andi, untuk besok kami tetap buka melayani legalisir KK dari jam 08.00 sampai 14.00. Terima kasih.',
+                        'tanggal_respon' => now()->subDays(12)->addMinutes(30),
+                    ]
+                ]
+            ],
+        ];
+
+        foreach ($data as $item) {
+            $responData = $item['respon'] ?? [];
+            unset($item['respon']); // Remove from array before creating aduan
+
+            $aduan = Aduan::updateOrCreate(
+                ['nomor_aduan' => $item['nomor_aduan']],
+                $item
+            );
+
+            // Create responses if they don't exist
+            if ($aduan->sudah_direspon && count($responData) > 0 && $aduan->respon()->count() == 0) {
+                foreach ($responData as $r) {
+                    $aduan->respon()->create($r);
+                }
+            }
+        }
+    }
+}

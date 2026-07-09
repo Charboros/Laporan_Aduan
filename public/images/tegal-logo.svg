@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 480" role="img" aria-label="Logo Kabupaten Tegal">
+  <!-- Shield background -->
+  <path d="M200 10 L380 60 L380 280 Q380 430 200 470 Q20 430 20 280 L20 60 Z" fill="#1a5cbf"/>
+  <!-- Black outline -->
+  <path d="M200 15 L375 63 L375 280 Q375 425 200 465 Q25 425 25 280 L25 63 Z" fill="none" stroke="#111" stroke-width="4"/>
+
+  <!-- Star at top -->
+  <polygon points="200,30 207,52 230,52 212,65 219,87 200,74 181,87 188,65 170,52 193,52"
+           fill="#f5c518"/>
+
+  <!-- Yellow pentagon/mountain shape -->
+  <path d="M130 150 L200 80 L270 150 L270 230 L130 230 Z" fill="#f5c518"/>
+  
+  <!-- Red flames -->
+  <path d="M160 230 C155 195 168 175 180 160 C175 180 185 200 185 220 Z" fill="#dc2626"/>
+  <path d="M200 230 C195 190 205 165 210 148 C215 168 220 195 215 220 Z" fill="#dc2626"/>
+  <path d="M240 230 C245 195 232 175 220 160 C225 180 215 200 215 220 Z" fill="#dc2626"/>
+  <!-- More flames -->
+  <path d="M175 230 C168 200 176 180 183 165 C181 185 188 205 188 225 Z" fill="#dc2626"/>
+  <path d="M225 230 C232 200 224 180 217 165 C219 185 212 205 212 225 Z" fill="#dc2626"/>
+  
+  <!-- Torch/monument -->
+  <rect x="191" y="185" width="18" height="55" fill="#f0f0f0"/>
+  <rect x="186" y="232" width="28" height="8" fill="#f0f0f0"/>
+  <rect x="182" y="238" width="36" height="5" fill="#f0f0f0"/>
+  <!-- Torch flame at top -->
+  <path d="M200 158 C193 168 188 180 193 188 C197 175 203 175 207 188 C212 180 207 168 200 158 Z" fill="white"/>
+  <!-- Gear/wheel ring -->
+  <circle cx="200" cy="210" r="18" fill="none" stroke="#333" stroke-width="4"/>
+  <!-- Gear teeth simplified -->
+  <circle cx="200" cy="190" r="3" fill="#333"/>
+  <circle cx="200" cy="230" r="3" fill="#333"/>
+  <circle cx="180" cy="210" r="3" fill="#333"/>
+  <circle cx="220" cy="210" r="3" fill="#333"/>
+
+  <!-- Water/waves below -->
+  <path d="M130 255 Q160 245 200 255 Q240 265 270 255 L270 280 Q240 292 200 280 Q160 268 130 280 Z" fill="#f0f0f0" opacity="0.8"/>
+  <!-- Black ground -->
+  <rect x="130" y="278" width="140" height="18" fill="#222"/>
+  <!-- Green ground -->
+  <rect x="130" y="296" width="140" height="22" fill="#2a7a2a"/>
+
+  <!-- Yellow leaves left -->
+  <path d="M58 180 C38 165 32 140 45 125 C52 155 60 168 72 182 Z" fill="#f5c518"/>
+  <path d="M52 205 C28 192 20 167 33 150 C42 178 53 195 68 208 Z" fill="#f5c518"/>
+  <path d="M48 232 C22 220 12 194 25 176 C36 204 50 223 67 234 Z" fill="#f5c518"/>
+  <path d="M46 260 C18 250 6 222 20 202 C33 230 48 252 67 262 Z" fill="#f5c518"/>
+  <path d="M48 288 C19 280 6 251 20 230 C34 258 50 280 70 290 Z" fill="#f5c518"/>
+  <path d="M55 315 C25 310 10 280 24 258 C39 286 57 308 78 318 Z" fill="#f5c518"/>
+  <path d="M65 342 C34 340 17 310 32 288 C48 316 67 338 90 346 Z" fill="#f5c518"/>
+
+  <!-- White cotton flowers left -->
+  <circle cx="45" cy="170" r="7" fill="white"/>
+  <circle cx="40" cy="198" r="7" fill="white"/>
+  <circle cx="38" cy="228" r="7" fill="white"/>
+  <circle cx="38" cy="258" r="7" fill="white"/>
+  <circle cx="42" cy="288" r="7" fill="white"/>
+  <circle cx="50" cy="318" r="7" fill="white"/>
+  <circle cx="62" cy="346" r="7" fill="white"/>
+
+  <!-- White cotton flowers right (mirrored) -->
+  <circle cx="355" cy="170" r="7" fill="white"/>
+  <circle cx="360" cy="198" r="7" fill="white"/>
+  <circle cx="362" cy="228" r="7" fill="white"/>
+  <circle cx="362" cy="258" r="7" fill="white"/>
+  <circle cx="358" cy="288" r="7" fill="white"/>
+  <circle cx="350" cy="318" r="7" fill="white"/>
+  <circle cx="338" cy="346" r="7" fill="white"/>
+
+  <!-- Green leaves right (mirrored) -->
+  <path d="M342 180 C362 165 368 140 355 125 C348 155 340 168 328 182 Z" fill="#2a7a2a"/>
+  <path d="M348 205 C372 192 380 167 367 150 C358 178 347 195 332 208 Z" fill="#2a7a2a"/>
+  <path d="M352 232 C378 220 388 194 375 176 C364 204 350 223 333 234 Z" fill="#2a7a2a"/>
+  <path d="M354 260 C382 250 394 222 380 202 C367 230 352 252 333 262 Z" fill="#2a7a2a"/>
+  <path d="M352 288 C381 280 394 251 380 230 C366 258 350 280 330 290 Z" fill="#2a7a2a"/>
+  <path d="M345 315 C375 310 390 280 376 258 C361 286 343 308 322 318 Z" fill="#2a7a2a"/>
+  <path d="M335 342 C366 340 383 310 368 288 C352 316 333 338 310 346 Z" fill="#2a7a2a"/>
+
+  <!-- Red banner -->
+  <path d="M75 370 L135 355 L200 365 L265 355 L325 370 L265 388 L200 398 L135 388 Z" fill="#dc2626"/>
+  <text x="200" y="382" text-anchor="middle" font-family="Arial, sans-serif" font-size="14"
+        font-weight="bold" fill="white">KABUPATEN TEGAL</text>
+</svg>

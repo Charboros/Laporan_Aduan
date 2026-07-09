@@ -16,9 +16,15 @@ class DashboardController extends Controller
         $base = Aduan::forUser($user);
 
         // ── Statistik keseluruhan ─────────────────────────────────
-        $totalAduan         = (clone $base)->count();
-        $aduanSudahDirespon = (clone $base)->where('sudah_direspon', true)->count();
-        $aduanBelumDirespon = (clone $base)->where('sudah_direspon', false)->count();
+        $statsGlobal = (clone $base)->selectRaw('
+            count(*) as total,
+            sum(case when sudah_direspon = 1 then 1 else 0 end) as sudah,
+            sum(case when sudah_direspon = 0 then 1 else 0 end) as belum
+        ')->first();
+
+        $totalAduan         = (int) ($statsGlobal->total ?? 0);
+        $aduanSudahDirespon = (int) ($statsGlobal->sudah ?? 0);
+        $aduanBelumDirespon = (int) ($statsGlobal->belum ?? 0);
 
         // ── Filter tahun ──────────────────────────────────────────
         $tahunDipilih = (int) $request->get('tahun', date('Y'));
@@ -30,9 +36,15 @@ class DashboardController extends Controller
         }
 
         // ── Statistik tahun yang dipilih ──────────────────────────
-        $totalTahunIni         = (clone $base)->whereYear('tanggal_aduan', $tahunDipilih)->count();
-        $sudahDiresponTahunIni = (clone $base)->whereYear('tanggal_aduan', $tahunDipilih)->where('sudah_direspon', true)->count();
-        $belumDiresponTahunIni = (clone $base)->whereYear('tanggal_aduan', $tahunDipilih)->where('sudah_direspon', false)->count();
+        $statsTahunIni = (clone $base)->inYear($tahunDipilih)->selectRaw('
+            count(*) as total,
+            sum(case when sudah_direspon = 1 then 1 else 0 end) as sudah,
+            sum(case when sudah_direspon = 0 then 1 else 0 end) as belum
+        ')->first();
+
+        $totalTahunIni         = (int) ($statsTahunIni->total ?? 0);
+        $sudahDiresponTahunIni = (int) ($statsTahunIni->sudah ?? 0);
+        $belumDiresponTahunIni = (int) ($statsTahunIni->belum ?? 0);
 
         // ── Per kanal & klasifikasi ───────────────────────────────
         $perKanal      = (clone $base)->perKanal($tahunDipilih)->get();

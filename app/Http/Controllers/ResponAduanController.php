@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ResponAduan;
 use App\Models\Aduan;
+use App\Models\ResponAduan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,14 +11,8 @@ class ResponAduanController extends Controller
 {
     public function store(Request $request, Aduan $aduan)
     {
-        // Hanya kepala_bidang yang boleh merespon
-        if (Auth::user()->role !== 'kepala_bidang') {
-            abort(403, 'Hanya Kepala Bidang yang dapat memberikan respon.');
-        }
-
         $request->validate([
-            'isi_respon'     => 'required|string',
-            'sudah_direspon' => 'required|in:0,1',
+            'isi_respon' => 'required|string',
         ]);
 
         ResponAduan::create([
@@ -28,12 +22,10 @@ class ResponAduanController extends Controller
             'respon_by'      => Auth::id(),
         ]);
 
-        // Update status sudah_direspon pada aduan
         $aduan->update([
-            'sudah_direspon'  => (bool) $request->sudah_direspon,
-            'isi_respon_awal' => $request->isi_respon,
+            'sudah_direspon'  => true,
         ]);
 
-        return redirect()->route('aduan.show', $aduan->id)->with('success', 'Tanggapan berhasil diberikan');
+        return back()->with('success', 'Respon untuk aduan ' . $aduan->nomor_aduan . ' berhasil dikirim.');
     }
 }

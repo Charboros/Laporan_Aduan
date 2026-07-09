@@ -2,26 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
 class Aduan extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'nomor_aduan',
-        'nama_pelapor',
-        'kontak_pelapor',
-        'isi_aduan',
         'kanal',
         'klasifikasi',
         'nama_akun',
+        'isi_aduan',
+        'caption',
+        'tanggal_aduan',
+        'waktu_aduan',
         'screenshot_path',
         'sudah_direspon',
         'isi_respon_awal',
-        'tanggal_aduan',
         'created_by',
     ];
 
@@ -29,6 +26,24 @@ class Aduan extends Model
         'sudah_direspon' => 'boolean',
         'tanggal_aduan'  => 'date',
     ];
+
+    // =========================================================
+    // Helpers
+    // =========================================================
+
+    protected static function datePartExpression(string $part): string
+    {
+        $driver = app('db')->connection()->getDriverName();
+        return match ($driver) {
+            'sqlite' => $part === 'month'
+                ? "strftime('%m', tanggal_aduan)"
+                : "strftime('%Y', tanggal_aduan)",
+            'pgsql' => $part === 'month'
+                ? 'EXTRACT(MONTH FROM DATE(tanggal_aduan))'
+                : 'EXTRACT(YEAR FROM DATE(tanggal_aduan))',
+            default => $part === 'month' ? 'MONTH(tanggal_aduan)' : 'YEAR(tanggal_aduan)',
+        };
+    }
 
     // =========================================================
     // Relationships
@@ -48,52 +63,38 @@ class Aduan extends Model
     // Query Scopes
     // =========================================================
 
-    /**
-     * Filter aduan berdasarkan role user.
-     * Petugas hanya melihat aduan yang ia buat sendiri.
-     */
+    /** Petugas hanya melihat aduan yang ia buat sendiri. */
     public function scopeForUser(Builder $query, User $user): Builder
     {
         if ($user->role === 'petugas') {
             return $query->where('created_by', $user->id);
         }
-
         return $query;
     }
 
-    /**
-     * Statistik per kanal untuk tahun tertentu.
-     */
     public function scopePerKanal(Builder $query, int $tahun): Builder
     {
         return $query
             ->selectRaw('COALESCE(kanal, "Tidak Diketahui") as kanal, COUNT(*) as jumlah')
-            ->whereYear('tanggal_aduan', $tahun)
+            ->whereRaw(sprintf('%s = ?', self::datePartExpression('year')), [$tahun])
             ->groupBy('kanal')
             ->orderBy('jumlah', 'desc');
     }
 
-    /**
-     * Statistik per klasifikasi untuk tahun tertentu.
-     */
     public function scopePerKlasifikasi(Builder $query, int $tahun): Builder
     {
         return $query
             ->selectRaw('COALESCE(klasifikasi, "Tidak Diketahui") as klasifikasi, COUNT(*) as jumlah')
-            ->whereYear('tanggal_aduan', $tahun)
+            ->whereRaw(sprintf('%s = ?', self::datePartExpression('year')), [$tahun])
             ->groupBy('klasifikasi')
             ->orderBy('jumlah', 'desc');
     }
 
-    /**
-     * Statistik per bulan (sudah diformat ke 12 bulan penuh) untuk tahun tertentu.
-     * Mengembalikan array [['bulan' => 'Jan', 'jumlah' => 5], ...]
-     */
     public static function dataBulanFormatted(Builder $query, int $tahun): array
     {
         $raw = (clone $query)
-            ->selectRaw('MONTH(tanggal_aduan) as bulan, COUNT(*) as jumlah')
-            ->whereYear('tanggal_aduan', $tahun)
+            ->selectRaw(sprintf('%s as bulan, COUNT(*) as jumlah', self::datePartExpression('month')))
+            ->whereRaw(sprintf('%s = ?', self::datePartExpression('year')), [$tahun])
             ->groupBy('bulan')
             ->orderBy('bulan')
             ->get()
@@ -112,31 +113,29 @@ class Aduan extends Model
                 'jumlah' => isset($raw[$b]) ? (int) $raw[$b]->jumlah : 0,
             ];
         }
-
         return $result;
     }
 
-    /**
-     * Tren jumlah aduan per tahun.
-     */
     public function scopeTrenTahunan(Builder $query): Builder
     {
         return $query
-            ->selectRaw('YEAR(tanggal_aduan) as tahun, COUNT(*) as jumlah')
+            ->selectRaw(sprintf('%s as tahun, COUNT(*) as jumlah', self::datePartExpression('year')))
             ->whereNotNull('tanggal_aduan')
             ->groupBy('tahun')
             ->orderBy('tahun');
     }
 
-    /**
-     * Daftar tahun yang tersedia.
-     */
     public function scopeDaftarTahun(Builder $query): Builder
     {
         return $query
-            ->selectRaw('YEAR(tanggal_aduan) as tahun')
+            ->selectRaw(sprintf('%s as tahun', self::datePartExpression('year')))
             ->distinct()
             ->whereNotNull('tanggal_aduan')
             ->orderBy('tahun', 'desc');
+    }
+
+    public function scopeInYear(Builder $query, int $year): Builder
+    {
+        return $query->whereRaw(sprintf('%s = ?', self::datePartExpression('year')), [$year]);
     }
 }
