@@ -74,6 +74,11 @@ class AduanController extends Controller
             $kanal = 'Lainnya: ' . $request->kanal_lainnya;
         }
 
+        // ------------------------------------------------------------------
+        // Simpan Data Aduan Baru ke Database
+        // ------------------------------------------------------------------
+        // Menggunakan method create() dari Eloquent ORM. Pastikan field
+        // yang diisi sudah terdaftar di property $fillable pada model Aduan.
         Aduan::create([
             'nomor_aduan'    => $nomorAduan,
             'kanal'          => $kanal,
@@ -84,8 +89,8 @@ class AduanController extends Controller
             'tanggal_aduan'  => $request->tanggal_aduan,
             'waktu_aduan'    => $request->waktu_aduan,
             'screenshot_path'=> $screenshotPath,
-            'sudah_direspon' => false,
-            'created_by'     => Auth::id(),
+            'sudah_direspon' => false,      // Nilai awal saat aduan baru dibuat selalu false (belum direspon)
+            'created_by'     => Auth::id(), // ID dari user yang sedang login saat menyimpan data
         ]);
 
         return back()->with('success', 'Aduan berhasil disimpan dengan nomor ' . $nomorAduan . '.');
@@ -97,19 +102,45 @@ class AduanController extends Controller
 
     public function data(Request $request)
     {
-        $query = Aduan::with(['petugas', 'respon.user'])->forUser(Auth::user());
+        // ------------------------------------------------------------------
+        // 1. Inisialisasi Query Dasar (Base Query)
+        // ------------------------------------------------------------------
+        // with()     : Mengambil relasi 'petugas' dan 'respon.user' sekaligus untuk menghindari N+1 problem.
+        // forUser()  : Scope buatan sendiri (di model Aduan) untuk memfilter data sesuai peran pengguna login.
+        $query = Aduan::with(['petugas', 'respon.user'])
+                      ->forUser(Auth::user());
 
+        // ------------------------------------------------------------------
+        // 2. Terapkan Filter Berdasarkan Input dari Pengguna (Request)
+        // ------------------------------------------------------------------
+        
+        // Filter berdasarkan status (Sudah/Belum direspon)
         if ($request->filled('status')) {
-            $status = $request->status === 'sudah' ? true : false;
-            $query->where('sudah_direspon', $status);
+            $isSudahDirespon = ($request->status === 'sudah') ? true : false;
+            $query->where('sudah_direspon', $isSudahDirespon);
         }
+
+        // Filter berdasarkan kanal pengaduan (Instagram, Facebook, dll)
         if ($request->filled('kanal')) {
-            $query->where('kanal', $request->kanal);
+            if ($request->kanal === 'Lainnya') {
+                // Jika filter yang dipilih adalah 'Lainnya', kita gunakan 'like' agar 
+                // data seperti 'Lainnya: Twitter' atau 'Lainnya: Email' tetap ikut terfilter.
+                $query->where('kanal', 'like', 'Lainnya%');
+            } else {
+                $query->where('kanal', $request->kanal);
+            }
         }
+
+        // Filter berdasarkan tahun kejadian/aduan
         if ($request->filled('tahun')) {
             $query->whereYear('tanggal_aduan', $request->tahun);
         }
 
+        // ------------------------------------------------------------------
+        // 3. Eksekusi Query dan Urutkan Hasilnya
+        // ------------------------------------------------------------------
+        // orderBy() : Urutkan dari data yang paling baru ditambahkan (descending).
+        // get()     : Eksekusi query untuk mengambil semua hasilnya dalam bentuk Collection.
         $aduans = $query->orderBy('created_at', 'desc')->get();
         $listKanal = self::listKanal();
         $listTahun = Aduan::daftarTahun()->pluck('tahun');

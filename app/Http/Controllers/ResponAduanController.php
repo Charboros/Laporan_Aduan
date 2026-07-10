@@ -11,17 +11,28 @@ class ResponAduanController extends Controller
 {
     public function store(Request $request, Aduan $aduan)
     {
+        // ------------------------------------------------------------------
+        // 1. Validasi Input
+        // ------------------------------------------------------------------
+        // Memastikan isi respon tidak kosong dan berupa teks
         $request->validate([
             'isi_respon' => 'required|string',
         ]);
 
+        // ------------------------------------------------------------------
+        // 2. Simpan Data Respon ke Database
+        // ------------------------------------------------------------------
         ResponAduan::create([
-            'aduan_id'       => $aduan->id,
+            'aduan_id'       => $aduan->id,       // Menghubungkan respon ini dengan aduan yang mana
             'isi_respon'     => $request->isi_respon,
-            'tanggal_respon' => date('Y-m-d'),
-            'respon_by'      => Auth::id(),
+            'tanggal_respon' => date('Y-m-d'),    // Tanggal saat ini
+            'respon_by'      => Auth::id(),       // ID petugas/admin yang memberikan respon
         ]);
 
+        // ------------------------------------------------------------------
+        // 3. Update Status Aduan
+        // ------------------------------------------------------------------
+        // Ubah status aduan menjadi "sudah direspon" (true)
         $aduan->update([
             'sudah_direspon'  => true,
         ]);

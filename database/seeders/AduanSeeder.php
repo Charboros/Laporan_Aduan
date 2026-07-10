@@ -15,6 +15,8 @@ class AduanSeeder extends Seeder
         $admin   = User::where('role', 'admin')->first() ?? User::first();
         $kabid   = User::where('role', 'kabid')->first() ?? User::first();
 
+        // Siapkan array berisi contoh-contoh data aduan palsu (dummy data)
+        // Data ini nantinya akan dilooping (diulang) dan disimpan ke database
         $data = [
             [
                 'nomor_aduan'    => 'ADU-2026-001',
@@ -104,16 +106,23 @@ class AduanSeeder extends Seeder
             ],
         ];
 
+        // ------------------------------------------------------------------
+        // Looping untuk Menyimpan Data Dummy ke Database
+        // ------------------------------------------------------------------
         foreach ($data as $item) {
+            // Pisahkan data respon dari array utama agar tidak error saat aduan disimpan
+            // karena tabel 'aduans' tidak punya kolom 'respon'
             $responData = $item['respon'] ?? [];
-            unset($item['respon']); // Remove from array before creating aduan
+            unset($item['respon']);
 
+            // Simpan atau perbarui aduan (menghindari duplikasi nomor_aduan jika di-seed ulang)
             $aduan = Aduan::updateOrCreate(
                 ['nomor_aduan' => $item['nomor_aduan']],
                 $item
             );
 
-            // Create responses if they don't exist
+            // Jika aduan ini statusnya 'sudah_direspon' dan ada data responnya,
+            // maka simpan juga data respon tersebut ke tabel 'respon_aduans'
             if ($aduan->sudah_direspon && count($responData) > 0 && $aduan->respon()->count() == 0) {
                 foreach ($responData as $r) {
                     $aduan->respon()->create($r);

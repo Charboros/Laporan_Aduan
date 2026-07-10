@@ -30,8 +30,9 @@ class User extends Authenticatable
     }
 
     // =========================================================
-    // Helpers
+    // 1. Fungsi Helper Hak Akses (Role)
     // =========================================================
+    // Mempermudah kita mengecek tipe user tanpa menulis 'role == admin' berulang kali
 
     public function isAdmin(): bool
     {
@@ -44,14 +45,18 @@ class User extends Authenticatable
     }
 
     // =========================================================
-    // Relationships
+    // 2. Relasi Antar Tabel (Relationships)
     // =========================================================
 
+    // Menghubungkan user ke tabel Aduan
+    // 1 User bisa menginput banyak Aduan (hasMany)
     public function aduans()
     {
         return $this->hasMany(Aduan::class, 'created_by');
     }
 
+    // Menghubungkan user ke tabel ResponAduan
+    // 1 User bisa memberikan banyak tanggapan/respon (hasMany)
     public function responAduans()
     {
         return $this->hasMany(ResponAduan::class, 'respon_by');

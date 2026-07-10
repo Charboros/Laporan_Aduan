@@ -11,13 +11,17 @@ class DatabaseSeeder extends Seeder
     use WithoutModelEvents;
 
     /**
-     * Seed the application's database.
+     * File utama yang akan dieksekusi saat kita menjalankan perintah:
+     * php artisan db:seed
      */
     public function run(): void
     {
+        // Panggil seeder-seeder lain agar data diisi secara berurutan
+        // Urutan pemanggilan ini penting, misalnya User harus dibuat lebih dulu 
+        // sebelum Aduan karena Aduan butuh data pembuat (created_by)
         $this->call([
-            UserSeeder::class,
-            AduanSeeder::class,
+            UserSeeder::class,   // 1. Buat data pengguna (admin, petugas, kabid)
+            AduanSeeder::class,  // 2. Buat data aduan palsu (dummy) dan responnya
         ]);
     }
 }

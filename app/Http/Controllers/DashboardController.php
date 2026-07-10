@@ -12,10 +12,18 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
-        // Base query sesuai role (petugas hanya data miliknya sendiri)
+        // ------------------------------------------------------------------
+        // 1. Inisialisasi Base Query
+        // ------------------------------------------------------------------
+        // Kita menggunakan scope 'forUser' agar data yang diambil 
+        // hanya yang diizinkan untuk dilihat oleh user yang sedang login.
         $base = Aduan::forUser($user);
 
-        // ── Statistik keseluruhan ─────────────────────────────────
+        // ------------------------------------------------------------------
+        // 2. Statistik Keseluruhan (Sepanjang Waktu)
+        // ------------------------------------------------------------------
+        // clone $base digunakan agar query dasarnya (yang difilter forUser)
+        // tidak tertimpa/berubah saat kita menjalankan query ini.
         $statsGlobal = (clone $base)->selectRaw('
             count(*) as total,
             sum(case when sudah_direspon = 1 then 1 else 0 end) as sudah,
@@ -26,16 +34,23 @@ class DashboardController extends Controller
         $aduanSudahDirespon = (int) ($statsGlobal->sudah ?? 0);
         $aduanBelumDirespon = (int) ($statsGlobal->belum ?? 0);
 
-        // ── Filter tahun ──────────────────────────────────────────
+        // ------------------------------------------------------------------
+        // 3. Persiapan Filter Tahun
+        // ------------------------------------------------------------------
+        // Ambil tahun dari request (URL), jika tidak ada gunakan tahun berjalan
         $tahunDipilih = (int) $request->get('tahun', date('Y'));
-
+        
+        // Ambil daftar tahun apa saja yang ada di database aduan
         $daftarTahun = (clone $base)->daftarTahun()->pluck('tahun')->toArray();
 
+        // Jika tabel aduan masih kosong, defaultkan ke tahun saat ini
         if (empty($daftarTahun)) {
             $daftarTahun = [(int) date('Y')];
         }
 
-        // ── Statistik tahun yang dipilih ──────────────────────────
+        // ------------------------------------------------------------------
+        // 4. Statistik Spesifik Untuk Tahun yang Dipilih
+        // ------------------------------------------------------------------
         $statsTahunIni = (clone $base)->inYear($tahunDipilih)->selectRaw('
             count(*) as total,
             sum(case when sudah_direspon = 1 then 1 else 0 end) as sudah,
@@ -46,15 +61,17 @@ class DashboardController extends Controller
         $sudahDiresponTahunIni = (int) ($statsTahunIni->sudah ?? 0);
         $belumDiresponTahunIni = (int) ($statsTahunIni->belum ?? 0);
 
-        // ── Per kanal & klasifikasi ───────────────────────────────
-        $perKanal      = (clone $base)->perKanal($tahunDipilih)->get();
+        // ------------------------------------------------------------------
+        // 5. Data Chart & Grafik
+        // ------------------------------------------------------------------
+        $perKanal       = (clone $base)->perKanal($tahunDipilih)->get();
         $perKlasifikasi = (clone $base)->perKlasifikasi($tahunDipilih)->get();
-
-        // ── Per bulan (12 bulan penuh) ────────────────────────────
-        $dataBulan = Aduan::dataBulanFormatted(clone $base, $tahunDipilih);
-
-        // ── Tren tahunan ──────────────────────────────────────────
-        $trenTahunan = (clone $base)->trenTahunan()->get();
+        
+        // Data format bulan untuk grafik garis (line chart)
+        $dataBulan      = Aduan::dataBulanFormatted(clone $base, $tahunDipilih);
+        
+        // Tren keseluruhan tahun per tahun
+        $trenTahunan    = (clone $base)->trenTahunan()->get();
 
         return view('dashboard', compact(
             'totalAduan',

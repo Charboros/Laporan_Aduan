@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Aduan extends Model
 {
+    // Daftar kolom tabel `aduans` yang diizinkan untuk diisi secara massal (Mass Assignment)
+    // Field yang tidak ada di sini tidak akan bisa disimpan via fungsi create()
     protected $fillable = [
         'nomor_aduan',
         'kanal',
@@ -46,29 +48,39 @@ class Aduan extends Model
     }
 
     // =========================================================
-    // Relationships
+    // 1. Relasi Antar Tabel (Relationships)
     // =========================================================
 
+    // Menghubungkan aduan ini ke tabel User (Petugas yang mencatat aduan)
+    // 1 Aduan hanya dimiliki/dicatat oleh 1 Petugas (belongsTo)
     public function petugas()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
+    // Menghubungkan aduan ini ke tabel ResponAduan
+    // 1 Aduan bisa memiliki banyak Respon (hasMany)
     public function respon()
     {
         return $this->hasMany(ResponAduan::class);
     }
 
     // =========================================================
-    // Query Scopes
+    // 2. Query Scopes (Fungsi Bantuan Pencarian)
     // =========================================================
+    // Scope mempermudah kita membuat kondisi pencarian yang sering dipakai
+    // sehingga controller kita terlihat lebih rapi. (Ditandai dengan awalan 'scope')
 
-    /** Petugas hanya melihat aduan yang ia buat sendiri. */
+    /** 
+     * Membatasi agar akun petugas hanya melihat aduan yang ia input sendiri. 
+     * Penggunaan di Controller: Aduan::forUser($user)
+     */
     public function scopeForUser(Builder $query, User $user): Builder
     {
         if ($user->role === 'petugas') {
             return $query->where('created_by', $user->id);
         }
+        // Jika bukan petugas (misal admin), jangan batasi datanya
         return $query;
     }
 
