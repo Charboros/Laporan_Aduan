@@ -18,7 +18,7 @@ class AduanSeeder extends Seeder
         $data = [
             [
                 'nomor_aduan'    => 'ADU-2026-001',
-                'kanal'          => 'IG',
+                'kanal'          => 'Instagram',
                 'klasifikasi'    => 'Pelayanan Pencatatan Sipil',
                 'nama_akun'      => 'Siti Aminah',
                 'isi_aduan'      => 'Warga atas nama Siti Aminah melaporkan kesulitan mengurus akta kelahiran anaknya karena dokumen persyaratan kurang jelas.',
@@ -38,7 +38,7 @@ class AduanSeeder extends Seeder
             ],
             [
                 'nomor_aduan'    => 'ADU-2026-002',
-                'kanal'          => 'FB',
+                'kanal'          => 'Facebook',
                 'klasifikasi'    => 'Rekam/Cetak/KTP/KIA',
                 'nama_akun'      => 'Budi Santoso',
                 'isi_aduan'      => 'Saya mengeluhkan proses perekaman KTP yang terlalu lama, sudah 2 minggu belum selesai.',
@@ -71,7 +71,7 @@ class AduanSeeder extends Seeder
             ],
             [
                 'nomor_aduan'    => 'ADU-2026-004',
-                'kanal'          => 'IG',
+                'kanal'          => 'Instagram',
                 'klasifikasi'    => 'Infrastruktur',
                 'nama_akun'      => 'Rina Wijaya',
                 'isi_aduan'      => 'Kondisi toilet di kantor pelayanan kurang bersih dan perlu perhatian segera.',

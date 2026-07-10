@@ -17,7 +17,7 @@ class AduanController extends Controller
 
     public static function listKanal(): array
     {
-        return ['IG', 'FB', 'Gmaps Review', 'Lainnya'];
+        return ['Instagram', 'Facebook', 'Gmaps Review', 'Lainnya'];
     }
 
     public static function listKlasifikasi(): array
