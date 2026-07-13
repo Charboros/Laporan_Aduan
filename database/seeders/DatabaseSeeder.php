@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,   // 1. Buat data pengguna (admin, petugas, kabid)
             AduanSeeder::class,  // 2. Buat data aduan palsu (dummy) dan responnya
+            KonfigurasiSeeder::class, // 3. Buat data awal Kanal & Klasifikasi
         ]);
     }
 }
