@@ -13,6 +13,9 @@ Route::get('/', function () {
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+
     Route::get('/aduan/input', [AduanController::class, 'create'])->name('aduan.create');
     Route::post('/aduan/input', [AduanController::class, 'store'])->name('aduan.store');
     Route::get('/aduan/data', [AduanController::class, 'data'])->name('aduan.data');
@@ -30,6 +33,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [$konfigController, 'index'])->name('index');
         
         Route::post('/user', [$konfigController, 'storeUser'])->name('user.store');
+        Route::put('/user/{user}', [$konfigController, 'updateUser'])->name('user.update');
         Route::delete('/user/{user}', [$konfigController, 'destroyUser'])->name('user.destroy');
         
         Route::post('/kanal', [$konfigController, 'storeKanal'])->name('kanal.store');

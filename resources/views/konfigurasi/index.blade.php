@@ -106,10 +106,13 @@
                                     </span>
                                 </td>
                                 <td class="px-6 py-3 text-right">
-                                    <form action="{{ route('konfigurasi.user.destroy', $u->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
-                                        @csrf @method('DELETE')
-                                        <button class="text-red-500 hover:text-red-700 font-medium text-sm">Hapus</button>
-                                    </form>
+                                    <div class="flex justify-end gap-3">
+                                        <button type="button" onclick="editUser({{ $u->id }}, '{{ addslashes($u->name) }}', '{{ $u->role }}')" class="text-blue-500 hover:text-blue-700 font-medium text-sm">Edit</button>
+                                        <form action="{{ route('konfigurasi.user.destroy', $u->id) }}" method="POST" onsubmit="return confirm('Hapus user ini?');">
+                                            @csrf @method('DELETE')
+                                            <button class="text-red-500 hover:text-red-700 font-medium text-sm">Hapus</button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -305,7 +308,54 @@
         </div>
     </div>
 
+    {{-- MODAL EDIT USER --}}
+    <div id="modal-edit-user" class="fixed inset-0 bg-slate-900/50 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800">Edit User</h3>
+                <button onclick="closeModal('modal-edit-user')" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-6">
+                <form id="form-edit-user" method="POST" class="space-y-4">
+                    @csrf
+                    @method('PUT')
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Nama User</label>
+                        <input type="text" name="name" id="edit-user-name" required class="w-full border-slate-200 rounded-xl text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Role</label>
+                        <select name="role" id="edit-user-role" required class="w-full border-slate-200 rounded-xl text-sm bg-white">
+                            <option value="petugas">Petugas</option>
+                            <option value="kabid">Kepala Bidang (Kabid)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Password Baru (Opsional)</label>
+                        <input type="password" name="password" class="w-full border-slate-200 rounded-xl text-sm" placeholder="Kosongkan jika tidak ingin diubah">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Konfirmasi Password Baru</label>
+                        <input type="password" name="password_confirmation" class="w-full border-slate-200 rounded-xl text-sm">
+                    </div>
+                    <div class="pt-4 flex gap-3">
+                        <button type="button" onclick="closeModal('modal-edit-user')" class="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 font-medium text-sm transition">Batal</button>
+                        <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium text-sm transition">Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+        function editUser(id, name, role) {
+            document.getElementById('edit-user-name').value = name;
+            document.getElementById('edit-user-role').value = role;
+            document.getElementById('form-edit-user').action = `/konfigurasi/user/${id}`;
+            openModal('modal-edit-user');
+        }
         function switchTab(tabId, btn) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(el => {

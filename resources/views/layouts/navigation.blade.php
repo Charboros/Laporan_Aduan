@@ -40,6 +40,11 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <!-- Profile -->
+                        <x-dropdown-link :href="route('profile.edit')">
+                            {{ __('Profil') }}
+                        </x-dropdown-link>
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -87,6 +92,11 @@
             </div>
 
             <div class="mt-3 space-y-1">
+                <!-- Profile -->
+                <x-responsive-nav-link :href="route('profile.edit')">
+                    {{ __('Profil') }}
+                </x-responsive-nav-link>
+
                 <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

@@ -46,6 +46,26 @@ class KonfigurasiController extends Controller
         return back()->with('success', 'User berhasil ditambahkan.');
     }
 
+    public function updateUser(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'role' => ['required', 'in:petugas,kabid'],
+            'password' => ['nullable', 'confirmed', Password::defaults()],
+        ]);
+
+        $user->name = $request->name;
+        $user->role = $request->role;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'User berhasil diperbarui.');
+    }
+
     public function destroyUser(User $user)
     {
         if ($user->isAdmin()) {

@@ -316,13 +316,13 @@
                     default   => ucfirst($user->role),
                 };
             @endphp
-            <div class="user-row">
+            <a href="{{ route('profile.edit') }}" class="user-row" style="text-decoration: none;">
                 <div class="user-avatar">{{ $initials }}</div>
                 <div class="user-info">
                     <p>{{ $user->name }}</p>
                     <p>{{ $roleLabel }}</p>
                 </div>
-            </div>
+            </a>
 
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
