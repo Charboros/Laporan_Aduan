@@ -11,12 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
+        $driver = \Illuminate\Support\Facades\DB::getDriverName();
+        $concatExpr = $driver === 'sqlite' 
+            ? "isi_aduan || '\n\nKeterangan/Caption Asli: ' || caption" 
+            : "CONCAT(isi_aduan, '\n\nKeterangan/Caption Asli: ', caption)";
+
         // Gabungkan caption ke isi_aduan untuk data lama
         \Illuminate\Support\Facades\DB::table('aduans')
             ->whereNotNull('caption')
             ->where('caption', '!=', '')
             ->update([
-                'isi_aduan' => \Illuminate\Support\Facades\DB::raw("CONCAT(isi_aduan, '\n\nKeterangan/Caption Asli: ', caption)")
+                'isi_aduan' => \Illuminate\Support\Facades\DB::raw($concatExpr)
             ]);
 
         Schema::table('aduans', function (Blueprint $table) {
@@ -30,7 +35,11 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('aduans', function (Blueprint $table) {
-            $table->string('caption')->nullable()->after('isi_aduan');
+            if (\Illuminate\Support\Facades\DB::getDriverName() === 'sqlite') {
+                $table->string('caption')->nullable();
+            } else {
+                $table->string('caption')->nullable()->after('isi_aduan');
+            }
         });
     }
 };

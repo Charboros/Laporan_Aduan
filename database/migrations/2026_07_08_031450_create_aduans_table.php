@@ -30,7 +30,13 @@ return new class extends Migration
         });
         
         // Gunakan MEDIUMBLOB agar bisa menyimpan file gambar binary hingga 16MB tanpa base64 overhead
-        \Illuminate\Support\Facades\DB::statement("ALTER TABLE aduans ADD screenshot MEDIUMBLOB NULL AFTER waktu_aduan");
+        if (\Illuminate\Support\Facades\DB::getDriverName() === 'sqlite') {
+            Schema::table('aduans', function (Blueprint $table) {
+                $table->binary('screenshot')->nullable();
+            });
+        } else {
+            \Illuminate\Support\Facades\DB::statement("ALTER TABLE aduans ADD screenshot MEDIUMBLOB NULL AFTER waktu_aduan");
+        }
     }
 
     public function down(): void
