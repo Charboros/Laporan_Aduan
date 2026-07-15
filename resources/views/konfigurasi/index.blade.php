@@ -8,8 +8,8 @@
                 </svg>
             </div>
             <div>
-                <h1 class="font-bold text-xl text-slate-800">Konfigurasi</h1>
-                <p class="text-sm text-slate-500 mt-0.5">Kelola User, Kanal, dan Klasifikasi Aduan</p>
+                <h1 class="font-bold text-xl text-white">Konfigurasi</h1>
+                <p class="text-sm text-blue-100 mt-0.5">Kelola User, Kanal, dan Klasifikasi Aduan</p>
             </div>
         </div>
     </x-slot>

@@ -7,10 +7,10 @@
                 </svg>
             </div>
             <div>
-                <h2 class="font-bold text-xl text-slate-800 leading-tight">
+                <h2 class="font-bold text-xl text-white leading-tight">
                     {{ __('Profil Saya') }}
                 </h2>
-                <p class="text-sm text-slate-500 mt-0.5">Kelola informasi profil dan kata sandi Anda</p>
+                <p class="text-sm text-blue-100 mt-0.5">Kelola informasi profil dan kata sandi Anda</p>
             </div>
         </div>
     </x-slot>

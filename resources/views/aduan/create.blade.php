@@ -7,8 +7,8 @@
                 </svg>
             </div>
             <div>
-                <h1 class="font-bold text-xl text-slate-800">Input Aduan</h1>
-                <p class="text-sm text-slate-500 mt-0.5">Catat aduan dari masyarakat</p>
+                <h1 class="font-bold text-xl text-white">Input Aduan</h1>
+                <p class="text-sm text-blue-100 mt-0.5">Catat aduan dari masyarakat</p>
             </div>
         </div>
     </x-slot>

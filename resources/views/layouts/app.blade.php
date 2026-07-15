@@ -221,6 +221,25 @@
             from { opacity: 0; transform: translateY(-8px); }
             to   { opacity: 1; transform: translateY(0); }
         }
+
+        /* ── Custom Animations ── */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide-up {
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+        }
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+
+        /* ── Custom Scrollbar ── */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.4); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.6); }
     </style>
 </head>
 <body class="antialiased bg-slate-100 flex h-screen overflow-hidden">
@@ -343,7 +362,7 @@
 
         {{-- Top Header --}}
         @isset($header)
-            <header class="bg-white border-b border-slate-200 shrink-0">
+            <header class="bg-blue-800/90 backdrop-blur-md border-b border-blue-900 shrink-0 sticky top-0 z-40 transition-all duration-300 shadow-md">
                 <div class="px-6 py-4">
                     {{ $header }}
                 </div>

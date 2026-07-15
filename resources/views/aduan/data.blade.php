@@ -2,8 +2,8 @@
     <x-slot name="header">
         <div class="flex flex-wrap justify-between items-center gap-3">
             <div>
-                <h1 class="font-bold text-xl text-slate-800">Data Aduan</h1>
-                <p class="text-sm text-slate-500 mt-0.5">Daftar semua aduan yang telah diinput</p>
+                <h1 class="font-bold text-xl text-white">Data Aduan</h1>
+                <p class="text-sm text-blue-100 mt-0.5">Daftar semua aduan yang telah diinput</p>
             </div>
             <div class="flex items-center gap-2">
                 {{-- Info/Stats ringkas bisa ditaruh di sini jika perlu --}}

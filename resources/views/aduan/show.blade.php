@@ -3,13 +3,13 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div class="flex items-center gap-3">
                 <a href="{{ route('aduan.data') }}"
-                   class="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                   class="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-white/20 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                     </svg>
                 </a>
                 <div>
-                    <h1 class="font-bold text-xl text-slate-800">Detail Aduan #{{ $aduan->id }}</h1>
+                    <h1 class="font-bold text-xl text-white">Detail Aduan #{{ $aduan->id }}</h1>
                 </div>
             </div>
             @if($aduan->sudah_direspon)

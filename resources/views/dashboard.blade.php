@@ -2,14 +2,14 @@
     <x-slot name="header">
         <div class="flex flex-wrap justify-between items-center gap-3">
             <div>
-                <h1 class="font-bold text-xl text-slate-800">Dashboard</h1>
-                <p class="text-sm text-slate-500 mt-0.5">
-                    Selamat datang, <span class="font-semibold text-blue-600">{{ Auth::user()->name }}</span>
+                <h1 class="font-bold text-xl text-white">Dashboard</h1>
+                <p class="text-sm text-blue-100 mt-0.5">
+                    Selamat datang, <span class="font-bold text-white">{{ Auth::user()->name }}</span>
                 </p>
             </div>
             {{-- Filter Tahun --}}
             <form method="GET" action="{{ route('dashboard') }}" class="flex items-center gap-2">
-                <label class="text-sm font-medium text-slate-500">Tahun:</label>
+                <label class="text-sm font-medium text-blue-50">Tahun:</label>
                 <select name="tahun" onchange="this.form.submit()"
                         class="border-slate-200 rounded-lg text-sm shadow-sm bg-white
                                focus:border-blue-400 focus:ring-2 focus:ring-blue-100 py-1.5 pr-8">
@@ -29,7 +29,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
 
         {{-- Total Aduan --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center gap-4">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-slide-up delay-100 cursor-default">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                  style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
                 <x-icons.aduan />
@@ -42,7 +42,7 @@
         </div>
 
         {{-- Belum Direspon --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-red-100 p-5 flex items-center gap-4">
+        <div class="bg-white rounded-2xl shadow-sm border border-red-100 p-5 flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-slide-up delay-200 cursor-default">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                  style="background: linear-gradient(135deg, #f87171 0%, #dc2626 100%);">
                 <x-icons.alert />
@@ -59,7 +59,7 @@
         </div>
 
         {{-- Sudah Direspon --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5 flex items-center gap-4">
+        <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-5 flex items-center gap-4 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 animate-slide-up delay-300 cursor-default">
             <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
                  style="background: linear-gradient(135deg, #34d399 0%, #059669 100%);">
                 <x-icons.check />
@@ -123,7 +123,7 @@
     {{-- ======================================================= --}}
     {{-- GRAFIK PER BULAN --}}
     {{-- ======================================================= --}}
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-5">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-5 hover:shadow-xl transition-all duration-300 animate-slide-up delay-300">
         <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
             <h3 class="font-bold text-slate-800">Aduan per Bulan &mdash; {{ $tahunDipilih }}</h3>
             @php $totalBulan = array_sum(array_column($dataBulan, 'jumlah')); @endphp
@@ -152,7 +152,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr class="hover:bg-slate-50 transition-colors">
                             @foreach($dataBulan as $b)
                                 <td class="text-center p-2 border border-slate-100
                                            {{ $b['jumlah'] > 0 ? 'font-bold text-blue-700' : 'text-slate-300' }}">
@@ -175,7 +175,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
 
         {{-- Per Kanal --}}
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-xl transition-all duration-300 animate-slide-up delay-300">
             <div class="px-6 py-4 border-b border-slate-100">
                 <h3 class="font-bold text-slate-800">Per Kanal &mdash; {{ $tahunDipilih }}</h3>
             </div>
@@ -294,17 +294,23 @@
         ];
 
         @if(array_sum(array_column($dataBulan, 'jumlah')) > 0)
-        new Chart(document.getElementById('chartBulan'), {
+        const ctxBulan = document.getElementById('chartBulan').getContext('2d');
+        const gradBulan = ctxBulan.createLinearGradient(0, 0, 0, 200);
+        gradBulan.addColorStop(0, 'rgba(59,130,246,0.9)');
+        gradBulan.addColorStop(1, 'rgba(59,130,246,0.2)');
+
+        new Chart(ctxBulan, {
             type: 'bar',
             data: {
                 labels: @json(array_column($dataBulan, 'bulan')),
                 datasets: [{
                     data: @json(array_column($dataBulan, 'jumlah')),
-                    backgroundColor: 'rgba(59,130,246,0.65)',
-                    borderColor: '#3B82F6',
-                    borderWidth: 1,
-                    borderRadius: 6,
+                    backgroundColor: gradBulan,
+                    borderColor: 'transparent',
+                    borderWidth: 0,
+                    borderRadius: 8,
                     borderSkipped: false,
+                    hoverBackgroundColor: '#2563EB'
                 }]
             },
             options: {

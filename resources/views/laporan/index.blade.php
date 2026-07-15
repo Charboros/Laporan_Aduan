@@ -2,8 +2,8 @@
     <x-slot name="header">
         <div class="flex flex-wrap justify-between items-center gap-3">
             <div>
-                <h1 class="font-bold text-xl text-slate-800">Rekap Aduan</h1>
-                <p class="text-sm text-slate-500 mt-0.5">
+                <h1 class="font-bold text-xl text-white">Rekap Aduan</h1>
+                <p class="text-sm text-blue-100 mt-0.5">
                     Semua data aduan — {{ $aduans->count() }} aduan tercatat
                 </p>
             </div>
