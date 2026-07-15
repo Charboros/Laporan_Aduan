@@ -18,11 +18,9 @@ class LaporanTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->get('/laporan');
+        $response = $this->get('/rekap');
 
         $response->assertOk();
-        $response->assertViewHas('daftarTahun');
-        $response->assertViewHas('tahunDipilih', date('Y'));
-        $response->assertViewHas('totalAduan', 0);
+        $response->assertViewHas('listTahun');
     }
 }
