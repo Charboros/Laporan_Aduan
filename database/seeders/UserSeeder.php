@@ -14,31 +14,45 @@ class UserSeeder extends Seeder
         // Buat Akun Dasar untuk Sistem (Default Users)
         // ------------------------------------------------------------------
 
-        // Akun 1: Admin (Akses Penuh)
+        // Akun 1: Admin
         User::create([
-            'name'     => 'Admin',
-            'password' => Hash::make('12345678'), // Password harus di-hash (enkripsi)
+            'name'     => 'admin',
+            'password' => Hash::make('admin3328'),
             'role'     => 'admin',
         ]);
 
-        // Akun 2: Petugas (Bisa membuat aduan dan melihat aduannya sendiri)
+        // Akun 2: Petugas
         User::create([
-            'name'     => 'Petugas',
-            'password' => Hash::make('12345678'),
+            'name'     => 'petugas',
+            'password' => Hash::make('petugas3328'),
             'role'     => 'petugas',
         ]);
 
-        // Akun 3: Kadis
+        // Akun 3: Kabid PIAK
         User::create([
-            'name'     => 'kadis',
-            'password' => Hash::make('12345678'),
+            'name'     => 'kabid_piak',
+            'password' => Hash::make('kabid33281'),
             'role'     => 'pimpinan',
         ]);
 
-        // Akun 4: Kabid
+        // Akun 4: Kabid Capil
         User::create([
-            'name'     => 'kabid',
-            'password' => Hash::make('12345678'),
+            'name'     => 'kabid_capil',
+            'password' => Hash::make('kabid33282'),
+            'role'     => 'pimpinan',
+        ]);
+
+        // Akun 5: Kabid Dafduk
+        User::create([
+            'name'     => 'kabid_dafduk',
+            'password' => Hash::make('kabid33283'),
+            'role'     => 'pimpinan',
+        ]);
+
+        // Akun 6: Kadis
+        User::create([
+            'name'     => 'kadis',
+            'password' => Hash::make('kadis3328'),
             'role'     => 'pimpinan',
         ]);
     }
