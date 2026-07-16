@@ -17,21 +17,28 @@ class UserSeeder extends Seeder
         // Akun 1: Admin (Akses Penuh)
         User::create([
             'name'     => 'Admin',
-            'password' => Hash::make('password123'), // Password harus di-hash (enkripsi)
+            'password' => Hash::make('12345678'), // Password harus di-hash (enkripsi)
             'role'     => 'admin',
         ]);
 
         // Akun 2: Petugas (Bisa membuat aduan dan melihat aduannya sendiri)
         User::create([
             'name'     => 'Petugas',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('12345678'),
             'role'     => 'petugas',
         ]);
 
-        // Akun 3: Pimpinan (Bisa memantau dan merespon aduan)
+        // Akun 3: Kadis
         User::create([
-            'name'     => 'Pimpinan',
-            'password' => Hash::make('password123'),
+            'name'     => 'kadis',
+            'password' => Hash::make('12345678'),
+            'role'     => 'pimpinan',
+        ]);
+
+        // Akun 4: Kabid
+        User::create([
+            'name'     => 'kabid',
+            'password' => Hash::make('12345678'),
             'role'     => 'pimpinan',
         ]);
     }

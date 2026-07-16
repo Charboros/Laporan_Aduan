@@ -22,6 +22,7 @@ class KonfigurasiSeeder extends Seeder
             'Pelayanan Pendaftaran Penduduk',
             'Rekam/Cetak/KTP/KIA',
             'Infrastruktur',
+            'SDM',
             'Lainnya',
         ];
         foreach ($klasifikasis as $kl) {
